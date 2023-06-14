@@ -7,9 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\**" />
+    <EmbeddedResource Remove="Services\**" />
+    <None Remove="Services\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Common\Contracts\Services\" />
     <Folder Include="Models\Common\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>

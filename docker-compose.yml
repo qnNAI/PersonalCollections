@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  personalcollections:
+    image: ${DOCKER_REGISTRY-}personalcollections
+    build:
+      context: .
+      dockerfile: PersonalCollections/Dockerfile
