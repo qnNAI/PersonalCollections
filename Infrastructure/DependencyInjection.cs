@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Application.Common.Contracts.Contexts;
 using Domain.Entities.Identity;
 using Infrastructure.Persistence.Contexts;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,7 +19,7 @@ namespace Infrastructure {
 				options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
 					builder => builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
-			services.AddIdentityCore<ApplicationUser>()
+			services.AddIdentity<ApplicationUser, IdentityRole>()
 				.AddEntityFrameworkStores<ApplicationDbContext>();
 
 			services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
