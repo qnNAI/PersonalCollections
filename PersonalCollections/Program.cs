@@ -11,8 +11,12 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 	.AddCookie(options => {
-		options.LoginPath = new PathString("/Identity/SignIn");
+		options.LoginPath = new PathString("/Identity/Signin");
 		//options.Events.OnValidatePrincipal += ActiveUserValidator.ValidateAsync;
+	})
+	.AddGoogle(options => {
+		options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+		options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
 	});
 //builder.Services.Configure<SecurityStampValidatorOptions>(options => {
 //	options.ValidationInterval = TimeSpan.FromSeconds(1);
