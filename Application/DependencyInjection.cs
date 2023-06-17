@@ -9,6 +9,8 @@ using MapsterMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Application.Common.Mappings;
 using FluentValidation;
+using Application.Common.Contracts.Services;
+using Application.Services;
 
 namespace Application {
 
@@ -20,6 +22,8 @@ namespace Application {
 
             services.AddSingleton(config);
             services.AddScoped<IMapper, Mapper>();
+
+            services.AddScoped<IIdentityService, IdentityService>();
 
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 

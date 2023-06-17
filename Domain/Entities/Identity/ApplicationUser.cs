@@ -10,7 +10,10 @@ namespace Domain.Entities.Identity
 {
 	public class ApplicationUser : IdentityUser
 	{
+		public bool ThirdPartyAuth { get; set; } = false;
+		public bool IsActive { get; set; } = true;
+		public DateTime RegistrationDate { get; set; }
 
-		public ICollection<Collection>? Collections { get; set; }
+		//public ICollection<Collection>? Collections { get; set; }
 	}
 }

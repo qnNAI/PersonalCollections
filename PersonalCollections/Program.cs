@@ -2,6 +2,7 @@ using Application;
 using FluentValidation.AspNetCore;
 using Infrastructure;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,21 +10,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddAuthentication(IdentityConstants.ExternalScheme)
+builder.Services
+    .AddAuthentication()
 	.AddCookie(options => {
 		options.LoginPath = new PathString("/Identity/GoogleSignin");
 		//options.Events.OnValidatePrincipal += ActiveUserValidator.ValidateAsync;
 	})
 	.AddGoogle(options => {
+		options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 		options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
 		options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
 	});
 //builder.Services.Configure<SecurityStampValidatorOptions>(options => {
 //	options.ValidationInterval = TimeSpan.FromSeconds(1);
 //});
-builder.Services.ConfigureApplicationCookie(options => {
-	options.LoginPath = new PathString("/Identity/GoogleSignin");
-});
 
 builder.Services.Configure<IdentityOptions>(opts => {
 	opts.Password.RequireNonAlphanumeric = false;
@@ -60,6 +60,7 @@ if (!app.Environment.IsDevelopment())
 app.UseStaticFiles();
 
 app.UseRouting();
+
 
 app.UseAuthentication();
 app.UseAuthorization();

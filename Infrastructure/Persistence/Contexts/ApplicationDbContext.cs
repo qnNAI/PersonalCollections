@@ -19,22 +19,22 @@ namespace Infrastructure.Persistence.Contexts
                 
         }
 
-        public DbSet<Collection> Collections { get; set; }
-        public DbSet<CollectionField> CollectionFields { get; set; }
-        public DbSet<CollectionTheme> CollectionThemes { get; set; }
+        //public DbSet<Collection> Collections { get; set; }
+        //public DbSet<CollectionField> CollectionFields { get; set; }
+        //public DbSet<CollectionTheme> CollectionThemes { get; set; }
 
-        public DbSet<Item> Items { get; set; }
-        public DbSet<ItemField> ItemFields { get; set; }
-        public DbSet<ItemFieldType> ItemFieldTypes { get; set; }
-        public DbSet<Tag> Tags { get; set; }
+        //public DbSet<Item> Items { get; set; }
+        //public DbSet<ItemField> ItemFields { get; set; }
+        //public DbSet<ItemFieldType> ItemFieldTypes { get; set; }
+        //public DbSet<Tag> Tags { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder) {
             base.OnModelCreating(builder);
 
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
-            builder.Entity<ItemField>()
-                .HasKey(x => new { x.CollectionFieldId, x.ItemId });
+            //builder.Entity<ItemField>()
+            //    .HasKey(x => new { x.CollectionFieldId, x.ItemId });
         }
     }
 }

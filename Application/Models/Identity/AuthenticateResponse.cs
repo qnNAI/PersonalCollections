@@ -11,10 +11,6 @@ namespace Application.Models.Identity
 	{
 		public bool Succeeded { get; set; }
 
-		public string Id { get; set; } = null!;
-		public string Username { get; set; } = null!;
-		public string Email { get; set; } = null!;
-
 		public IEnumerable<IdentityError>? Errors { get; set; }
 	}
 }

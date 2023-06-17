@@ -13,7 +13,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Common\Contracts\Services\" />
+    <Compile Include="Services\ApplicationSignInManager.cs" />
+    <Compile Include="Services\IdentityService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Models\Common\" />
   </ItemGroup>
 
