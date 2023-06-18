@@ -2,6 +2,7 @@
 using Application.Common.Contracts;
 using Application.Common.Contracts.Services;
 using Application.Models.Identity;
+using AspNet.Security.OAuth.GitHub;
 using Domain.Entities.Identity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -29,7 +30,7 @@ namespace PersonalCollections.Controllers {
 			return View();
 		}
 
-        public async Task<IActionResult> GoogleSignin() {
+        public IActionResult GoogleSignin() {
 			var props = new AuthenticationProperties {
 				RedirectUri = Url.Action("GoogleResponse")
 			};
@@ -37,35 +38,41 @@ namespace PersonalCollections.Controllers {
 		}
 
 		public async Task<IActionResult> GoogleResponse() {
-			var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-			if (result is null || result.Principal is null) {
-				return RedirectToAction("Error", new[] {
-					new IdentityError {
-						Code = "GoogleAuthFailed",
-						Description = "Failed to authenticate with Google"
-					}
-				});
-			}
-
-			var email = result.Principal.FindFirst(ClaimTypes.Email)?.Value ?? string.Empty;
-			var username = result.Principal.Identity.Name;
-            var user = await _userManager.FindByEmailAsync(email);
-
-			if (user == null) {
-				var signUpResult = await _identityService.SignUpExternalAsync(new SignUpExternalRequest { 
-					Email = email,
-					Username = username
+            if(result is null || result.Principal is null) {
+                return RedirectToAction("Error", new[] {
+                    new IdentityError {
+                        Code = "GoogleAuthFailed",
+                        Description = "Failed to authenticate with Google"
+                    }
                 });
-				if(!signUpResult.Succeeded) {
-					return RedirectToAction("Error", signUpResult.Errors);
-				}
-                user = await _userManager.FindByEmailAsync(email);
             }
-			
-			await _signInManager.SignInAsync(user, true);
-			return Redirect("/");
-		}
+
+            return await _SignInExternalAsync(result.Principal);
+        }
+
+        public IActionResult GithubSignin() {
+            var props = new AuthenticationProperties {
+                RedirectUri = Url.Action("GithubResponse")
+            };
+            return Challenge(props, GitHubAuthenticationDefaults.AuthenticationScheme);
+        }
+
+		public async Task<IActionResult> GithubResponse() {
+            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            if(result is null || result.Principal is null) {
+                return RedirectToAction("Error", new[] {
+                    new IdentityError {
+                        Code = "GithubAuthFailed",
+                        Description = "Failed to authenticate with Github"
+                    }
+                });
+            }
+
+            return await _SignInExternalAsync(result.Principal);
+        }
 
 		[HttpPost]
 		[Authorize]
@@ -93,9 +100,34 @@ namespace PersonalCollections.Controllers {
             return RedirectToAction("");
         }
 
-		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-		public IActionResult Error(IEnumerable<IdentityError> errors) {
-			return View();
-		}
-	}
+        private async Task<IActionResult> _SignInExternalAsync(ClaimsPrincipal principal) {
+            var userIdentifier = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if(userIdentifier is null) {
+                return RedirectToAction("Error", new[] {
+                    new IdentityError {
+                        Code = "ExternalAuthFailed",
+                        Description = "External authentication failed. User identifier not found!"
+                    }
+                });
+            }
+
+            var user = await _userManager.FindByIdAsync(userIdentifier);
+
+            if(user is null) {
+                var signUpResult = await _identityService.SignUpExternalAsync(new SignUpExternalRequest {
+                    Id = userIdentifier,
+                    Email = principal.FindFirst(ClaimTypes.Email)?.Value,
+                    Username = principal.Identity!.Name!
+                });
+                if(!signUpResult.Succeeded) {
+                    return View("Error", signUpResult.Errors);
+                }
+                user = await _userManager.FindByIdAsync(userIdentifier);
+            }
+
+            await _signInManager.SignInAsync(user!, true);
+            return Redirect("/");
+        }
+    }
 }

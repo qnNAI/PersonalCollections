@@ -8,7 +8,8 @@ namespace Application.Models.Identity {
 
     public class SignUpExternalRequest {
 
-        public string Email { get; set; } = null!;
+        public string Id { get; set; } = null!;
+        public string? Email { get; set; }
         public string Username { get; set; } = null!;
     }
 }

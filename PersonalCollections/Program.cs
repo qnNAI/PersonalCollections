@@ -20,7 +20,12 @@ builder.Services
 		options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 		options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
 		options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-	});
+	})
+	.AddGitHub(options => {
+		options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+		options.ClientId = builder.Configuration["Authentication:Github:ClientId"];
+        options.ClientSecret = builder.Configuration["Authentication:Github:ClientSecret"];
+    });
 //builder.Services.Configure<SecurityStampValidatorOptions>(options => {
 //	options.ValidationInterval = TimeSpan.FromSeconds(1);
 //});
@@ -32,7 +37,7 @@ builder.Services.Configure<IdentityOptions>(opts => {
 	opts.Password.RequireDigit = false;
 	opts.Password.RequiredLength = 1;
 
-	opts.User.RequireUniqueEmail = true;
+	opts.User.RequireUniqueEmail = false;
 });
 
 builder.Services.AddControllersWithViews(o => {
