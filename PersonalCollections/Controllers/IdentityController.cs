@@ -4,12 +4,14 @@ using Application.Common.Contracts.Services;
 using Application.Models.Identity;
 using AspNet.Security.OAuth.GitHub;
 using Domain.Entities.Identity;
+using Mapster;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PersonalCollections.Controllers {
 
@@ -67,16 +69,18 @@ namespace PersonalCollections.Controllers {
         }
 
         public IActionResult GoogleSignIn() {
-			var props = new AuthenticationProperties {
+            var props = new AuthenticationProperties {
 				RedirectUri = Url.Action("GoogleResponse")
 			};
-			return Challenge(props, GoogleDefaults.AuthenticationScheme);
+
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", Url.Action("GoogleResponse"));
+            return Challenge(properties, "Google");
 		}
 
 		public async Task<IActionResult> GoogleResponse() {
-            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            var info = await _signInManager.GetExternalLoginInfoAsync();
 
-            if(result is null || result.Principal is null) {
+            if(info is null || info.Principal is null) {
                 return RedirectToAction("Error", new[] {
                     new IdentityError {
                         Code = "GoogleAuthFailed",
@@ -85,7 +89,60 @@ namespace PersonalCollections.Controllers {
                 });
             }
 
-            return await _SignInExternalAsync(result.Principal);
+            var signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+            if(signInResult.Succeeded) {
+                return Redirect("/");
+            }
+
+            ViewData["Provider"] = info.LoginProvider;
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            return View("ExternalLogin", new ExternalLoginModel { Email = email });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginModel model) {
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if(info == null) {
+                return RedirectToAction("Error", new[] {
+                    new IdentityError {
+                        Code = "ExternalAuthFailed",
+                        Description = "Failed to authenticate with external service!"
+                    }
+                });
+            }
+                
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            IdentityResult result;
+
+            if(user != null) {
+                result = await _userManager.AddLoginAsync(user, info);
+                if(result.Succeeded) {
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return Redirect("/");
+                }
+            } 
+            else {
+                user = new ApplicationUser {
+                    Email = model.Email,
+                    UserName = info.Principal.Identity.Name,
+                    IsActive = true,
+                    RegistrationDate = DateTime.UtcNow
+                };
+                result = await _userManager.CreateAsync(user);
+                if(result.Succeeded) {
+                    result = await _userManager.AddLoginAsync(user, info);
+                    if(result.Succeeded) {
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        return Redirect("/");
+                    }
+                }
+            }
+
+            foreach(var error in result.Errors) {
+                ModelState.TryAddModelError(error.Code, error.Description);
+            }
+            return View("ExternalLogin", model);
         }
 
         public IActionResult GithubSignIn() {

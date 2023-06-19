@@ -17,7 +17,7 @@ builder.Services
 		//options.Events.OnValidatePrincipal += ActiveUserValidator.ValidateAsync;
 	})
 	.AddGoogle(options => {
-		options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+		options.SignInScheme = IdentityConstants.ExternalScheme;
 		options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
 		options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
 	})
@@ -37,7 +37,7 @@ builder.Services.Configure<IdentityOptions>(opts => {
 	opts.Password.RequireDigit = false;
 	opts.Password.RequiredLength = 1;
 
-	opts.User.RequireUniqueEmail = false;
+	opts.User.RequireUniqueEmail = true;
 });
 
 builder.Services.AddControllersWithViews(o => {

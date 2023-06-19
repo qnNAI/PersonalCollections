@@ -15,6 +15,10 @@ namespace Application.Common.Mappings {
             TypeAdapterConfig<SignUpExternalRequest, ApplicationUser>
                 .NewConfig()
                 .Map(dest => dest.UserName, src => src.Username);
+
+            TypeAdapterConfig<SignUpRequest, ApplicationUser>
+                .NewConfig()
+                .Map(dest => dest.UserName, src => src.Username);
         }
     }
 }

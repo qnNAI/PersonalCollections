@@ -43,6 +43,14 @@ namespace Application.Services {
             return await base.PasswordSignInAsync(user, password, isPersistent, lockoutOnFailure);
         }
 
+        public override async Task SignInAsync(ApplicationUser user, bool isPersistent, string? authenticationMethod = null) {
 
+
+            await base.SignInAsync(user, isPersistent, authenticationMethod);
+        }
+
+        protected override Task<SignInResult?> PreSignInCheck(ApplicationUser user) {
+            return base.PreSignInCheck(user);
+        }
     }
 }
