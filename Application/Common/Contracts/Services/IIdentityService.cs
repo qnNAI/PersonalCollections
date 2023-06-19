@@ -12,5 +12,6 @@ namespace Application.Common.Contracts.Services
     public interface IIdentityService
     {
         Task<IdentityResult> SignUpExternalAsync(SignUpExternalRequest request);
+        Task<IdentityResult> SignUpAsync(SignUpRequest request);
     }
 }

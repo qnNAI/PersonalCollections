@@ -32,5 +32,28 @@ namespace Application.Services
             var createdResult = await _userManager.CreateAsync(user);
             return createdResult;
         }
+
+        public async Task<IdentityResult> SignUpAsync(SignUpRequest request) {
+            if(request is null) {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            var user = request.Adapt<ApplicationUser>();
+            user.ThirdPartyAuth = false;
+            user.RegistrationDate = DateTime.UtcNow;
+
+            var existing = await _userManager.FindByEmailAsync(request.Email);
+            if (existing is not null) {
+                return IdentityResult.Failed(
+                    new IdentityError {
+                        Code = "EmailAlreadyInUse",
+                        Description = "Specified email already in use!"
+                    }
+                );
+            }
+
+            var result = await _userManager.CreateAsync(user, request.Password);
+            return result;
+        }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Common.Contracts.Contexts;
+using Application.Services;
 using Domain.Entities.Identity;
 using Infrastructure.Persistence.Contexts;
 using Microsoft.AspNetCore.Identity;
@@ -20,10 +21,10 @@ namespace Infrastructure {
 					builder => builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
 			services.AddIdentity<ApplicationUser, IdentityRole>()
-				.AddEntityFrameworkStores<ApplicationDbContext>();
+				.AddEntityFrameworkStores<ApplicationDbContext>()
+				.AddSignInManager<ApplicationSignInManager>();
 
 			services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
-
 
 			return services;
         }

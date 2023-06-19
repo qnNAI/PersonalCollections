@@ -30,7 +30,43 @@ namespace PersonalCollections.Controllers {
 			return View();
 		}
 
-        public IActionResult GoogleSignin() {
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        public async Task<IActionResult> SignIn(SignInRequest request) {
+            if(!ModelState.IsValid) {
+                return View(request);
+            }
+
+            var result = await _signInManager.PasswordSignInAsync(request.Username, request.Password, isPersistent: true, lockoutOnFailure: false);
+            if(!result.Succeeded) {
+                ModelState.AddModelError("", "Authentication failed!");
+                return View(request);
+            }
+
+            return Redirect("/");
+        }
+
+        [HttpGet]
+        public IActionResult SignUp() {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        public async Task<IActionResult> SignUp(SignUpRequest request) {
+            var result = await _identityService.SignUpAsync(request);
+            if(!result.Succeeded) {
+                ModelState.AddModelError("", "Registration failed!");
+                _AddModelErrors(result);
+                return View(request);
+            }
+
+            return RedirectToAction("Signin");
+        }
+
+        public IActionResult GoogleSignIn() {
 			var props = new AuthenticationProperties {
 				RedirectUri = Url.Action("GoogleResponse")
 			};
@@ -52,7 +88,7 @@ namespace PersonalCollections.Controllers {
             return await _SignInExternalAsync(result.Principal);
         }
 
-        public IActionResult GithubSignin() {
+        public IActionResult GithubSignIn() {
             var props = new AuthenticationProperties {
                 RedirectUri = Url.Action("GithubResponse")
             };
@@ -76,28 +112,9 @@ namespace PersonalCollections.Controllers {
 
 		[HttpPost]
 		[Authorize]
-		public async Task<IActionResult> Signout() {
+		public new async Task<IActionResult> SignOut() {
 			await _signInManager.SignOutAsync();
             return Redirect("/");
-        }
-
-        [HttpGet]
-        public IActionResult SignUp() {
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SignUp(SignUpRequest request) {
-            //var result = await _identityService.SignUpAsync(request);
-            //if(!result.Succeeded) {
-            //    ModelState.AddModelError("", "Registration failed!");
-            //    _AddModelErrors(result);
-            //    return View(request);
-            //}
-
-            //await _SignInAsync(result);
-            return RedirectToAction("");
         }
 
         private async Task<IActionResult> _SignInExternalAsync(ClaimsPrincipal principal) {
@@ -128,6 +145,12 @@ namespace PersonalCollections.Controllers {
 
             await _signInManager.SignInAsync(user!, true);
             return Redirect("/");
+        }
+
+        private void _AddModelErrors(IdentityResult result) {
+            foreach(var error in result.Errors ?? Enumerable.Empty<IdentityError>()) {
+                ModelState.AddModelError("", error.Description);
+            }
         }
     }
 }
