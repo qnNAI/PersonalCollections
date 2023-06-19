@@ -8,22 +8,23 @@
     <form asp-antiforgery="true" asp-action="SignIn" asp-controller="Identity" method="post">
     <div>
         <div class="validation text-danger" asp-validation-summary="ModelOnly"></div>
-        <div>
-            <label asp-for="Username" class="form-label">Username</label>
+        <div class="form-floating">
             <input asp-for="Username" class="form-control" autocomplete="username" aria-required="true" placeholder="JohnDoe" type="text" />
+            <label asp-for="Username">Username</label>
             <span asp-validation-for="Username" class="text-danger"></span>
         </div>
-        <div>
-            <label asp-for="Password" class="form-label">Password</label>
+        <div class="form-floating">
             <input asp-for="Password" class="form-control" autocomplete="current-password" aria-required="true" type="password" placeholder="password" />
+            <label asp-for="Password">Password</label>
             <span asp-validation-for="Password" class="text-danger"></span>
         </div>
-        <div>
+        <div class="mb-4 d-flex flex-row justify-content-between">
             <input type="submit" value="Sign in" class="btn btn-success mb-0" />
-            <a asp-action="Signup" class="btn btn-primary ms-2">Sign up</a>
+            <a asp-action="SignUp" class="btn btn-primary ms-2">Sign up</a>
         </div>
+        <partial name="_SocialButtonsPartial" />
     </div>
-</form>
+    </form>
 
 </div>
 
