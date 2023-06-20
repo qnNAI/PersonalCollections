@@ -10,6 +10,6 @@ namespace Application.Models.Identity {
 
     public class ExternalLoginModel {
 
-        public string Email { get; set; } = null!;
+        public string? Email { get; set; }
     }
 }

@@ -20,6 +20,9 @@ namespace PersonalCollections.Controllers {
 		private readonly UserManager<ApplicationUser> _userManager;
         private readonly IIdentityService _identityService;
 
+        private const string GOOGLE_PROVIDER = "Google";
+        private const string GITHUB_PROVIDER = "GitHub";
+
         public IdentityController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, IIdentityService identityService)
         {
 			_signInManager = signInManager;
@@ -34,7 +37,6 @@ namespace PersonalCollections.Controllers {
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [AllowAnonymous]
         public async Task<IActionResult> SignIn(SignInRequest request) {
             if(!ModelState.IsValid) {
                 return View(request);
@@ -56,7 +58,6 @@ namespace PersonalCollections.Controllers {
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [AllowAnonymous]
         public async Task<IActionResult> SignUp(SignUpRequest request) {
             var result = await _identityService.SignUpAsync(request);
             if(!result.Succeeded) {
@@ -69,22 +70,23 @@ namespace PersonalCollections.Controllers {
         }
 
         public IActionResult GoogleSignIn() {
-            var props = new AuthenticationProperties {
-				RedirectUri = Url.Action("GoogleResponse")
-			};
-
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", Url.Action("GoogleResponse"));
-            return Challenge(properties, "Google");
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(GOOGLE_PROVIDER, Url.Action("ExternalResponse"));
+            return Challenge(properties, GOOGLE_PROVIDER);
 		}
 
-		public async Task<IActionResult> GoogleResponse() {
+        public IActionResult GitHubSignIn() {
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(GITHUB_PROVIDER, Url.Action("ExternalResponse"));
+            return Challenge(properties, GITHUB_PROVIDER);
+        }
+
+        public async Task<IActionResult> ExternalResponse() {
             var info = await _signInManager.GetExternalLoginInfoAsync();
 
             if(info is null || info.Principal is null) {
                 return RedirectToAction("Error", new[] {
                     new IdentityError {
-                        Code = "GoogleAuthFailed",
-                        Description = "Failed to authenticate with Google"
+                        Code = "ExternalAuthFailed",
+                        Description = "Failed to authenticate with External service"
                     }
                 });
             }
@@ -111,8 +113,8 @@ namespace PersonalCollections.Controllers {
                     }
                 });
             }
-                
-            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            var user = await _userManager.FindByEmailAsync(model.Email!);
             IdentityResult result;
 
             if(user != null) {
@@ -121,8 +123,7 @@ namespace PersonalCollections.Controllers {
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return Redirect("/");
                 }
-            } 
-            else {
+            } else {
                 user = new ApplicationUser {
                     Email = model.Email,
                     UserName = info.Principal.Identity.Name,
@@ -145,62 +146,10 @@ namespace PersonalCollections.Controllers {
             return View("ExternalLogin", model);
         }
 
-        public IActionResult GithubSignIn() {
-            var props = new AuthenticationProperties {
-                RedirectUri = Url.Action("GithubResponse")
-            };
-            return Challenge(props, GitHubAuthenticationDefaults.AuthenticationScheme);
-        }
-
-		public async Task<IActionResult> GithubResponse() {
-            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
-            if(result is null || result.Principal is null) {
-                return RedirectToAction("Error", new[] {
-                    new IdentityError {
-                        Code = "GithubAuthFailed",
-                        Description = "Failed to authenticate with Github"
-                    }
-                });
-            }
-
-            return await _SignInExternalAsync(result.Principal);
-        }
-
-		[HttpPost]
+        [HttpPost]
 		[Authorize]
 		public new async Task<IActionResult> SignOut() {
 			await _signInManager.SignOutAsync();
-            return Redirect("/");
-        }
-
-        private async Task<IActionResult> _SignInExternalAsync(ClaimsPrincipal principal) {
-            var userIdentifier = principal.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if(userIdentifier is null) {
-                return RedirectToAction("Error", new[] {
-                    new IdentityError {
-                        Code = "ExternalAuthFailed",
-                        Description = "External authentication failed. User identifier not found!"
-                    }
-                });
-            }
-
-            var user = await _userManager.FindByIdAsync(userIdentifier);
-
-            if(user is null) {
-                var signUpResult = await _identityService.SignUpExternalAsync(new SignUpExternalRequest {
-                    Id = userIdentifier,
-                    Email = principal.FindFirst(ClaimTypes.Email)?.Value,
-                    Username = principal.Identity!.Name!
-                });
-                if(!signUpResult.Succeeded) {
-                    return View("Error", signUpResult.Errors);
-                }
-                user = await _userManager.FindByIdAsync(userIdentifier);
-            }
-
-            await _signInManager.SignInAsync(user!, true);
             return Redirect("/");
         }
 

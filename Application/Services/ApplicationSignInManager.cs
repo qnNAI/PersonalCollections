@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities.Identity;
@@ -36,21 +37,19 @@ namespace Application.Services {
                 return SignInResult.NotAllowed;
             }
 
-            if(user.ThirdPartyAuth) {
-                return SignInResult.Failed;
-            }
-
             return await base.PasswordSignInAsync(user, password, isPersistent, lockoutOnFailure);
         }
 
-        public override async Task SignInAsync(ApplicationUser user, bool isPersistent, string? authenticationMethod = null) {
+        public override async Task<SignInResult> ExternalLoginSignInAsync(string loginProvider, string providerKey, bool isPersistent, bool bypassTwoFactor) {
+            var info = await GetExternalLoginInfoAsync();
+            if (info is not null) {
+                var user = await _userManager.FindByEmailAsync(info.Principal.FindFirstValue(ClaimTypes.Email) ?? string.Empty);
+                if (user is not null && !user.IsActive) {
+                    return SignInResult.NotAllowed;
+                }
+            }
 
-
-            await base.SignInAsync(user, isPersistent, authenticationMethod);
-        }
-
-        protected override Task<SignInResult?> PreSignInCheck(ApplicationUser user) {
-            return base.PreSignInCheck(user);
+            return await base.ExternalLoginSignInAsync(loginProvider, providerKey, isPersistent, bypassTwoFactor);
         }
     }
 }
