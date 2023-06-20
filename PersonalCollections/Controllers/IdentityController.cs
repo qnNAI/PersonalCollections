@@ -43,6 +43,12 @@ namespace PersonalCollections.Controllers {
             }
 
             var result = await _signInManager.PasswordSignInAsync(request.Username, request.Password, isPersistent: true, lockoutOnFailure: false);
+
+            if (result.IsNotAllowed) {
+                ModelState.AddModelError("", "Authentication failed. User is locked!");
+                return View(request);
+            }
+
             if(!result.Succeeded) {
                 ModelState.AddModelError("", "Authentication failed!");
                 return View(request);
@@ -94,6 +100,15 @@ namespace PersonalCollections.Controllers {
             var signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
             if(signInResult.Succeeded) {
                 return Redirect("/");
+            }
+
+            if (signInResult.IsNotAllowed) {
+                return View("Error", new[] {
+                    new IdentityError {
+                        Code = "ExternalAuthFailed",
+                        Description = "Failed to authenticate: user is locked!"
+                    }
+                });
             }
 
             ViewData["Provider"] = info.LoginProvider;
