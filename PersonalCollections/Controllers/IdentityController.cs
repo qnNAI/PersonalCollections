@@ -83,7 +83,7 @@ namespace PersonalCollections.Controllers {
             var info = await _signInManager.GetExternalLoginInfoAsync();
 
             if(info is null || info.Principal is null) {
-                return RedirectToAction("Error", new[] {
+                return View("Error", new[] {
                     new IdentityError {
                         Code = "ExternalAuthFailed",
                         Description = "Failed to authenticate with External service"
@@ -103,26 +103,19 @@ namespace PersonalCollections.Controllers {
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginModel model) {
+        public async Task<IActionResult> ExternalLogin(ExternalLoginModel model) {
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if(info == null) {
-                return RedirectToAction("Error", new[] {
-                    new IdentityError {
-                        Code = "ExternalAuthFailed",
-                        Description = "Failed to authenticate with external service!"
-                    }
-                });
+                ModelState.AddModelError("", "Failed to authenticate with external service!");
+                return View(model);
             }
 
             var user = await _userManager.FindByEmailAsync(model.Email!);
             IdentityResult result;
 
             if(user != null) {
-                result = await _userManager.AddLoginAsync(user, info);
-                if(result.Succeeded) {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return Redirect("/");
-                }
+                ModelState.AddModelError("", "Failed to authenticate with external service. Email already taken!");
+                return View(model);
             } else {
                 user = new ApplicationUser {
                     Email = model.Email,
@@ -141,9 +134,9 @@ namespace PersonalCollections.Controllers {
             }
 
             foreach(var error in result.Errors) {
-                ModelState.TryAddModelError(error.Code, error.Description);
+                ModelState.AddModelError("", error.Description);
             }
-            return View("ExternalLogin", model);
+            return View(model);
         }
 
         [HttpPost]

@@ -20,18 +20,17 @@ namespace Application.Services
             _userManager = userManager;
         }
 
-        public async Task<IdentityResult> SignUpExternalAsync(SignUpExternalRequest request) {
-            if(request is null) {
-                throw new ArgumentNullException(nameof(request));
-            }
+        //public async Task<IdentityResult> SignUpExternalAsync(SignUpExternalRequest request) {
+        //    if(request is null) {
+        //        throw new ArgumentNullException(nameof(request));
+        //    }
 
-            var user = request.Adapt<ApplicationUser>();
-            user.ThirdPartyAuth = true;
-            user.RegistrationDate = DateTime.UtcNow;
+        //    var user = request.Adapt<ApplicationUser>();
+        //    user.RegistrationDate = DateTime.UtcNow;
             
-            var createdResult = await _userManager.CreateAsync(user);
-            return createdResult;
-        }
+        //    var createdResult = await _userManager.CreateAsync(user);
+        //    return createdResult;
+        //}
 
         public async Task<IdentityResult> SignUpAsync(SignUpRequest request) {
             if(request is null) {
@@ -39,7 +38,6 @@ namespace Application.Services
             }
 
             var user = request.Adapt<ApplicationUser>();
-            user.ThirdPartyAuth = false;
             user.RegistrationDate = DateTime.UtcNow;
 
             var existing = await _userManager.FindByEmailAsync(request.Email);

@@ -22,8 +22,8 @@ builder.Services
 		options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
 	})
 	.AddGitHub(options => {
-		options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-		options.ClientId = builder.Configuration["Authentication:Github:ClientId"];
+		options.SignInScheme = IdentityConstants.ExternalScheme;
+        options.ClientId = builder.Configuration["Authentication:Github:ClientId"];
         options.ClientSecret = builder.Configuration["Authentication:Github:ClientSecret"];
     });
 //builder.Services.Configure<SecurityStampValidatorOptions>(options => {
