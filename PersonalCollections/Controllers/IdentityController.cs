@@ -159,6 +159,10 @@ namespace PersonalCollections.Controllers {
             return Redirect("/");
         }
 
+        public IActionResult AccessDenied() {
+            return View();
+        }
+
         private void _AddModelErrors(IdentityResult result) {
             foreach(var error in result.Errors ?? Enumerable.Empty<IdentityError>()) {
                 ModelState.AddModelError("", error.Description);
