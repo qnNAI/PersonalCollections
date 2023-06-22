@@ -21,6 +21,7 @@ namespace Infrastructure {
 					builder => builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
 			services.AddIdentity<ApplicationUser, IdentityRole>()
+				.AddRoles<IdentityRole>()
 				.AddEntityFrameworkStores<ApplicationDbContext>()
 				.AddSignInManager<ApplicationSignInManager>();
 

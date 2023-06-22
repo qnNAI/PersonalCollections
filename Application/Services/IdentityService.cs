@@ -51,6 +51,12 @@ namespace Application.Services
             }
 
             var result = await _userManager.CreateAsync(user, request.Password);
+
+            if (result.Succeeded) {
+                var addToRoleResult = await _userManager.AddToRoleAsync(user, "User");
+                return addToRoleResult;
+            }
+
             return result;
         }
     }

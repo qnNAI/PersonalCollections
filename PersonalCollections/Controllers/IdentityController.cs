@@ -20,9 +20,6 @@ namespace PersonalCollections.Controllers {
 		private readonly UserManager<ApplicationUser> _userManager;
         private readonly IIdentityService _identityService;
 
-        private const string GOOGLE_PROVIDER = "Google";
-        private const string GITHUB_PROVIDER = "GitHub";
-
         public IdentityController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, IIdentityService identityService)
         {
 			_signInManager = signInManager;
@@ -76,13 +73,13 @@ namespace PersonalCollections.Controllers {
         }
 
         public IActionResult GoogleSignIn() {
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties(GOOGLE_PROVIDER, Url.Action("ExternalResponse"));
-            return Challenge(properties, GOOGLE_PROVIDER);
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(GoogleDefaults.AuthenticationScheme, Url.Action("ExternalResponse"));
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
 		}
 
         public IActionResult GitHubSignIn() {
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties(GITHUB_PROVIDER, Url.Action("ExternalResponse"));
-            return Challenge(properties, GITHUB_PROVIDER);
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(GitHubAuthenticationDefaults.AuthenticationScheme, Url.Action("ExternalResponse"));
+            return Challenge(properties, GitHubAuthenticationDefaults.AuthenticationScheme);
         }
 
         public async Task<IActionResult> ExternalResponse() {
@@ -140,8 +137,9 @@ namespace PersonalCollections.Controllers {
                 };
                 result = await _userManager.CreateAsync(user);
                 if(result.Succeeded) {
+                    var addToRoleResult = await _userManager.AddToRoleAsync(user, "User");
                     result = await _userManager.AddLoginAsync(user, info);
-                    if(result.Succeeded) {
+                    if(result.Succeeded && addToRoleResult.Succeeded) {
                         await _signInManager.SignInAsync(user, isPersistent: false);
                         return Redirect("/");
                     }

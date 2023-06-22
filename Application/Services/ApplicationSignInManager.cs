@@ -23,6 +23,7 @@ namespace Application.Services {
             IAuthenticationSchemeProvider schemes,
             IUserConfirmation<ApplicationUser> confirmation)
             : base(userManager, contextAccessor, claimsFactory, optionsAccessor, logger, schemes, confirmation) {
+
             this._userManager = userManager;
         }
 
@@ -51,5 +52,18 @@ namespace Application.Services {
 
             return await base.ExternalLoginSignInAsync(loginProvider, providerKey, isPersistent, bypassTwoFactor);
         }
+
+        public override async Task<ClaimsPrincipal> CreateUserPrincipalAsync(ApplicationUser user) {
+            var principal = await base.CreateUserPrincipalAsync(user);
+
+            var roles = await _userManager.GetRolesAsync(user);
+            foreach(var role in roles) {
+                principal.Identities.FirstOrDefault().AddClaim(new Claim(ClaimTypes.Role, role));
+            }
+
+            return principal;
+        }
+
+
     }
 }
