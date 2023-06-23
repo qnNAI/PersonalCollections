@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Common.Contracts.Contexts;
+using Application.Common.Contracts.Services;
 using Application.Services;
 using Domain.Entities.Identity;
 using Infrastructure.Persistence.Contexts;
+using Infrastructure.Services.Email;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -26,6 +28,8 @@ namespace Infrastructure {
 				.AddSignInManager<ApplicationSignInManager>();
 
 			services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
+
+			services.AddScoped<IEmailService, EmailService>();
 
 			return services;
         }

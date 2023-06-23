@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Application.Common.Contracts;
 using Application.Common.Contracts.Services;
+using Application.Models.Email;
 using Application.Models.Identity;
 using AspNet.Security.OAuth.GitHub;
 using Domain.Entities.Identity;
@@ -19,12 +20,18 @@ namespace PersonalCollections.Controllers {
 		private readonly SignInManager<ApplicationUser> _signInManager;
 		private readonly UserManager<ApplicationUser> _userManager;
         private readonly IIdentityService _identityService;
+        private readonly IEmailService _emailService;
 
-        public IdentityController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, IIdentityService identityService)
+        public IdentityController(
+            SignInManager<ApplicationUser> signInManager,
+            UserManager<ApplicationUser> userManager,
+            IIdentityService identityService,
+            IEmailService emailService)
         {
 			_signInManager = signInManager;
 			_userManager = userManager;
             _identityService = identityService;
+            _emailService = emailService;
         }
 
 		[HttpGet]
@@ -161,6 +168,14 @@ namespace PersonalCollections.Controllers {
 
         public IActionResult AccessDenied() {
             return View();
+        }
+
+        public async Task<IActionResult> Test() {
+
+            var message = new Message(new string[] { "klyuchenkorus@gmail.com" }, "Test email", "This is the content from our email.");
+            await _emailService.SendEmailAsync(message);
+
+            return Ok();
         }
 
         private void _AddModelErrors(IdentityResult result) {

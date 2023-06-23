@@ -11,12 +11,15 @@ using Application.Common.Mappings;
 using FluentValidation;
 using Application.Common.Contracts.Services;
 using Application.Services;
+using Microsoft.Extensions.Configuration;
+using Application.Models.Email;
 
-namespace Application {
+namespace Application
+{
 
     public static class DependencyInjection {
 
-        public static IServiceCollection AddApplication(this IServiceCollection services) {
+        public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration) {
             var config = TypeAdapterConfig.GlobalSettings;
             MappingProfile.ApplyMappings();
 
@@ -26,6 +29,12 @@ namespace Application {
             services.AddScoped<IIdentityService, IdentityService>();
 
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+            var emailConfig = configuration
+               .GetSection("EmailConfiguration")
+               .Get<EmailConfiguration>();
+
+            services.AddSingleton(emailConfig);
 
             return services;
         }
