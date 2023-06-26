@@ -18,9 +18,12 @@
             <label asp-for="Password">Password</label>
             <span asp-validation-for="Password" class="text-danger"></span>
         </div>
-        <div class="mb-4 d-flex flex-row justify-content-between">
+        <div class=" d-flex flex-row justify-content-between">
             <input type="submit" value="Sign in" class="btn btn-success mb-0" />
             <a asp-action="SignUp" class="btn btn-primary ms-2">Sign up</a>
+        </div>
+        <div class="mb-4">
+            <a asp-action="ForgotPassword">Forgot Password</a>
         </div>
         <partial name="_SocialButtonsPartial" />
     </div>

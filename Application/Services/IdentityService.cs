@@ -20,18 +20,6 @@ namespace Application.Services
             _userManager = userManager;
         }
 
-        //public async Task<IdentityResult> SignUpExternalAsync(SignUpExternalRequest request) {
-        //    if(request is null) {
-        //        throw new ArgumentNullException(nameof(request));
-        //    }
-
-        //    var user = request.Adapt<ApplicationUser>();
-        //    user.RegistrationDate = DateTime.UtcNow;
-            
-        //    var createdResult = await _userManager.CreateAsync(user);
-        //    return createdResult;
-        //}
-
         public async Task<IdentityResult> SignUpAsync(SignUpRequest request) {
             if(request is null) {
                 throw new ArgumentNullException(nameof(request));

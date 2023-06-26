@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PersonalCollections.Controllers {
 
@@ -166,7 +165,44 @@ namespace PersonalCollections.Controllers {
             return Redirect("/");
         }
 
+        [HttpGet]
         public IActionResult AccessDenied() {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult ForgotPassword() {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest request) {
+            if (!ModelState.IsValid) {
+                return View(request);
+            }
+
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if (user is null) {
+                return RedirectToAction(nameof(ForgotPasswordConfirmation));
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var callback = Url.Action(nameof(ResetPassword), "Identity", new { token, email = user.Email }, Request.Scheme);
+
+            var message = new Message(new string[] { user.Email }, "Reset password link", callback);
+            await _emailService.SendEmailAsync(message);
+
+            return RedirectToAction(nameof(ForgotPasswordConfirmation));
+        }
+
+        [HttpGet]
+        public IActionResult ForgotPasswordConfirmation() {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult ResetPassword() {
             return View();
         }
 

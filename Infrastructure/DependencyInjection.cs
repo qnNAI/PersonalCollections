@@ -25,7 +25,12 @@ namespace Infrastructure {
 			services.AddIdentity<ApplicationUser, IdentityRole>()
 				.AddRoles<IdentityRole>()
 				.AddEntityFrameworkStores<ApplicationDbContext>()
-				.AddSignInManager<ApplicationSignInManager>();
+				.AddSignInManager<ApplicationSignInManager>()
+				.AddDefaultTokenProviders();
+
+			services.Configure<DataProtectionTokenProviderOptions>(opts => {
+				opts.TokenLifespan = TimeSpan.FromMinutes(30);
+			});
 
 			services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
 
