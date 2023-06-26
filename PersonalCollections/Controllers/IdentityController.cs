@@ -5,9 +5,6 @@ using Application.Models.Email;
 using Application.Models.Identity;
 using AspNet.Security.OAuth.GitHub;
 using Domain.Entities.Identity;
-using Mapster;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -77,6 +74,8 @@ namespace PersonalCollections.Controllers {
 
             return RedirectToAction("Signin");
         }
+
+        #region External auth
 
         public IActionResult GoogleSignIn() {
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(GoogleDefaults.AuthenticationScheme, Url.Action("ExternalResponse"));
@@ -158,6 +157,8 @@ namespace PersonalCollections.Controllers {
             return View(model);
         }
 
+        #endregion
+
         [HttpPost]
 		[Authorize]
 		public new async Task<IActionResult> SignOut() {
@@ -169,6 +170,8 @@ namespace PersonalCollections.Controllers {
         public IActionResult AccessDenied() {
             return View();
         }
+
+        #region Password recovery
 
         [HttpGet]
         public IActionResult ForgotPassword() {
@@ -202,9 +205,41 @@ namespace PersonalCollections.Controllers {
         }
 
         [HttpGet]
-        public IActionResult ResetPassword() {
+        public IActionResult ResetPassword(string token, string email) {
+            var request = new ResetPasswordRequest { Email = email, Token = token };
+            return View(request);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordRequest request) {
+            if (!ModelState.IsValid) {
+                return View(request);
+            }
+
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if (user is null) {
+                return RedirectToAction(nameof(ResetPasswordConfirmation));
+            }
+
+            var resetResult = await _userManager.ResetPasswordAsync(user, request.Token, request.Password);
+            if (!resetResult.Succeeded) {
+                foreach(var error in resetResult.Errors) {
+                    ModelState.AddModelError("", error.Description);
+                }
+
+                return View();
+            }
+
+            return RedirectToAction(nameof(ResetPasswordConfirmation));
+        }
+
+        [HttpGet]
+        public IActionResult ResetPasswordConfirmation() {
             return View();
         }
+
+        #endregion
 
         public async Task<IActionResult> Test() {
 
