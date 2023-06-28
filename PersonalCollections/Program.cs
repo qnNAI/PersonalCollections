@@ -12,10 +12,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 
+var port = Environment.GetEnvironmentVariable("PORT");
+//builder.WebHost.UseUrls("http://*:" + port);
+
 builder.Services
     .AddAuthentication()
 	.AddCookie(options => {
-		options.LoginPath = new PathString("/Identity/GoogleSignin");
+		options.LoginPath = new PathString("/Identity/SignIn");
 		options.AccessDeniedPath = new PathString("/Identity/AccessDenied");
 	})
 	.AddGoogle(options => {
@@ -30,6 +33,7 @@ builder.Services
     });
 builder.Services.ConfigureApplicationCookie(options => {
 	options.AccessDeniedPath = new PathString("/Identity/AccessDenied");
+	options.LoginPath = new PathString("/Identity/SignIn");
 });
 
 builder.Services.AddAuthorization();

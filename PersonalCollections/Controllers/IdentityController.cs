@@ -5,6 +5,7 @@ using Application.Models.Email;
 using Application.Models.Identity;
 using AspNet.Security.OAuth.GitHub;
 using Domain.Entities.Identity;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -30,14 +31,16 @@ namespace PersonalCollections.Controllers {
             _emailService = emailService;
         }
 
-		[HttpGet]
-		public IActionResult Signin() {
+        #region Authentication
+
+        [HttpGet]
+		public IActionResult SignIn() {
 			return View();
 		}
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SignIn(SignInRequest request) {
+        public async Task<IActionResult> SignIn(SignInRequest request, string returnUrl) {
             if(!ModelState.IsValid) {
                 return View(request);
             }
@@ -54,7 +57,8 @@ namespace PersonalCollections.Controllers {
                 return View(request);
             }
 
-            return Redirect("/");
+            
+            return string.IsNullOrEmpty(returnUrl) ? Redirect("/") : Redirect(returnUrl);
         }
 
         [HttpGet]
@@ -74,6 +78,20 @@ namespace PersonalCollections.Controllers {
 
             return RedirectToAction("Signin");
         }
+
+        [HttpPost]
+        [Authorize]
+        public new async Task<IActionResult> SignOut() {
+            await _signInManager.SignOutAsync();
+            return Redirect("/");
+        }
+
+        [HttpGet]
+        public IActionResult AccessDenied() {
+            return View();
+        }
+
+        #endregion
 
         #region External auth
 
@@ -159,18 +177,6 @@ namespace PersonalCollections.Controllers {
 
         #endregion
 
-        [HttpPost]
-		[Authorize]
-		public new async Task<IActionResult> SignOut() {
-			await _signInManager.SignOutAsync();
-            return Redirect("/");
-        }
-
-        [HttpGet]
-        public IActionResult AccessDenied() {
-            return View();
-        }
-
         #region Password recovery
 
         [HttpGet]
@@ -241,13 +247,80 @@ namespace PersonalCollections.Controllers {
 
         #endregion
 
-        public async Task<IActionResult> Test() {
+        #region User management
 
-            var message = new Message(new string[] { "klyuchenkorus@gmail.com" }, "Test email", "This is the content from our email.");
-            await _emailService.SendEmailAsync(message);
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public IActionResult UserManagement() {
+            return View();
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Users(int page = 1, int pageSize = 10, CancellationToken cancellationToken = default) {
+            var users = await _identityService.GetUsersAsync(page, pageSize, cancellationToken);
+
+            ViewData["page"] = page;
+            ViewData["total"] = (int)Math.Ceiling((double)(await _identityService.CountUsersAsync(cancellationToken)) / pageSize);
+
+            return PartialView("_UsersPartial", users);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteUsers(string[] users, CancellationToken cancellationToken) {
+            await _identityService.DeleteMultipleAsync(users, cancellationToken);
+
+            if(_IsCurrentUserAffected(users)) {
+                await _signInManager.SignOutAsync();
+            }
 
             return Ok();
         }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> LockUsers(string[] users, CancellationToken cancellationToken) {
+            await _identityService.LockMultipleAsync(users, cancellationToken);
+
+            if(_IsCurrentUserAffected(users)) {
+                await _signInManager.SignOutAsync();
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UnlockUsers(string[] users, CancellationToken cancellationToken) {
+            await _identityService.UnlockMultipleAsync(users, cancellationToken);
+            return Ok();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AdminAdd(string[] users, CancellationToken cancellationToken) {
+            await _identityService.AddAdminMultipleAsync(users, cancellationToken);
+            return Ok();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AdminRemove(string[] users, CancellationToken cancellationToken) {
+            await _identityService.RemoveAdminMultipleAsync(users, cancellationToken);
+
+            if(_IsCurrentUserAffected(users)) {
+                await _signInManager.SignOutAsync();
+            }
+
+            return Ok();
+        }
+
+        private bool _IsCurrentUserAffected(string[] users) {
+            return users.Contains(HttpContext.User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier)?.Value);
+        }
+
+        #endregion
 
         private void _AddModelErrors(IdentityResult result) {
             foreach(var error in result.Errors ?? Enumerable.Empty<IdentityError>()) {

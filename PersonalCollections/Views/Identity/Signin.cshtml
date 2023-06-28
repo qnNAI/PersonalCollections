@@ -26,6 +26,7 @@
             <a asp-action="ForgotPassword">Forgot Password</a>
         </div>
         <partial name="_SocialButtonsPartial" />
+        <input type="hidden" name="ReturnUrl" value="@Context.Request.Query["ReturnUrl"]" />
     </div>
     </form>
 

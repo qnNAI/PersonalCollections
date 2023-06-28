@@ -45,7 +45,6 @@ namespace Infrastructure.Services.Email {
                 await client.AuthenticateAsync(_emailConfig.UserName, _configuration["EmailPassword"]);
                 await client.SendAsync(mailMessage);
             } catch {
-                //log an error message or throw an exception or both.
                 throw;
             } finally {
                 client.Disconnect(true);
