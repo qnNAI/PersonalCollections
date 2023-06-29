@@ -1,0 +1,54 @@
+﻿@{
+    ViewData["Title"] = "User Management";
+}
+
+
+<h3 class="mb-5 mt-4">User management</h3>
+
+<partial name="_ManageButtons" />
+
+<div class="mb-5 mt-5 table-responsive">
+    <table class="table table-hover table-striped" id="usersTable">
+        <thead class="table-dark">
+            <tr>
+                <th><input type="checkbox" id="headCheckbox" onchange="headCheckboxChanged(this)" /></th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Registration date</th>
+                <th>Status</th>
+                <th>Roles</th>
+            </tr>
+        </thead>
+        <tbody class="table-group-divider" id="tBody">
+        </tbody>
+    </table>
+
+    <nav>
+        <ul class="pagination">
+            <li class="page-item" id="prevBtn">
+                <a class="page-link" onclick="loadPrevPage('@Url.Action("Users")')" href="#">Previous</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link">
+                    <span id="currentPage"></span> / <span id="totalPages"></span>
+                </a>
+            </li>
+            <li class="page-item" id="nextBtn">
+                <a class="page-link" onclick="loadNextPage('@Url.Action("Users")')" href="#">Next</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="d-flex flex-row justify-content-center w-100 mb-5">
+        <div class="spinner-border text-success" role="status" id="loader">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        loadUsers('@Url.Action("Users")', 1);
+
+    }, false);
+</script>

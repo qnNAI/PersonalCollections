@@ -4,8 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Common.Contracts.Contexts;
+using Application.Common.Contracts.Services;
+using Application.Services;
 using Domain.Entities.Identity;
 using Infrastructure.Persistence.Contexts;
+using Infrastructure.Services.Email;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,11 +22,19 @@ namespace Infrastructure {
 				options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
 					builder => builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
-			services.AddIdentityCore<ApplicationUser>()
-				.AddEntityFrameworkStores<ApplicationDbContext>();
+			services.AddIdentity<ApplicationUser, IdentityRole>()
+				.AddRoles<IdentityRole>()
+				.AddEntityFrameworkStores<ApplicationDbContext>()
+				.AddSignInManager<ApplicationSignInManager>()
+				.AddDefaultTokenProviders();
+
+			services.Configure<DataProtectionTokenProviderOptions>(opts => {
+				opts.TokenLifespan = TimeSpan.FromMinutes(30);
+			});
 
 			services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
 
+			services.AddScoped<IEmailService, EmailService>();
 
 			return services;
         }

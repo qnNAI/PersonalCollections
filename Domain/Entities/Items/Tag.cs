@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Common.Contracts {
+namespace Domain.Entities.Items {
 
-	public interface IIdentityService {
-	}
+    public class Tag : Entity {
+
+        public string Name { get; set; } = null!;
+    }
 }
