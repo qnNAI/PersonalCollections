@@ -9,5 +9,7 @@ namespace Domain.Entities.Items {
     public class Tag : Entity {
 
         public string Name { get; set; } = null!;
+
+        public ICollection<Item> Items { get; set; } = new List<Item>();
     }
 }

@@ -10,5 +10,7 @@ namespace Domain.Entities.Items {
     public class CollectionTheme : Entity {
 
         public string Name { get; set; } = null!;
+
+        public ICollection<Collection> Collections { get; set; } = new List<Collection>();
     }
 }

@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities.Items {
 
-    public class ItemFieldType : Entity {
+    public class CollectionFieldType : Entity {
 
         public string Name { get; set; } = null!;
+
+        public ICollection<CollectionField> Fields { get; set; } = new List<CollectionField>();
     }
 }

@@ -16,7 +16,7 @@ namespace Domain.Entities.Items {
         [ForeignKey(nameof(CollectionId))]
         public Collection Collection { get; set; } = null!;
 
-        public ICollection<Tag> Tags { get; set; } = null!;
-        public ICollection<ItemField>? Fields { get; set; }
+        public ICollection<Tag> Tags { get; set; } = new List<Tag>();
+        public ICollection<ItemField> Fields { get; set; } = new List<ItemField>();
     }
 }
