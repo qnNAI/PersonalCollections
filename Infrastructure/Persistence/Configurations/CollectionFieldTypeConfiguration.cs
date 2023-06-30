@@ -14,6 +14,7 @@ namespace Infrastructure.Persistence.Configurations {
 
         public void Configure(EntityTypeBuilder<CollectionFieldType> builder) {
             builder.Property(e => e.Name).HasMaxLength(255);
+            builder.HasIndex(e => e.Name).IsUnique();
 
             builder
                 .HasMany(e => e.Fields)

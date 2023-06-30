@@ -45,6 +45,10 @@ namespace Infrastructure.Persistence.Contexts
             builder.Entity<CollectionTheme>()
                 .Property(e => e.Name)
                 .HasMaxLength(255);
+
+            builder.Entity<CollectionTheme>()
+                .HasIndex(e => e.Name)
+                .IsUnique();
         }
     }
 }
