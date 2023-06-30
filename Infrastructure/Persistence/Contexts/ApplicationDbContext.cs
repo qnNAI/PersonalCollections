@@ -1,4 +1,5 @@
 ﻿using Application.Common.Contracts.Contexts;
+using Application.Helpers;
 using Domain.Entities.Identity;
 using Domain.Entities.Items;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -15,9 +16,11 @@ namespace Infrastructure.Persistence.Contexts
 {
 	internal class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
 	{
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        private readonly CollectionTypeMapping _typeMapping;
+
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, CollectionTypeMapping typeMapping) : base(options)
         {
-                
+            _typeMapping = typeMapping;
         }
 
         public DbSet<Collection> Collections { get; set; }
@@ -54,7 +57,7 @@ namespace Infrastructure.Persistence.Contexts
             _SeedData(builder);
         }
 
-        private static void _SeedData(ModelBuilder builder)
+        private void _SeedData(ModelBuilder builder)
         {
             builder.Entity<CollectionTheme>()
                 .HasData(
@@ -128,6 +131,16 @@ namespace Infrastructure.Persistence.Contexts
                         Id = Guid.NewGuid().ToString(),
                         Name = "Lighters"
                     }
+                );
+
+
+            builder.Entity<CollectionFieldType>()
+                .HasData(
+                    _typeMapping.TypeMappings.Keys.Select(x => new CollectionFieldType
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Name = x
+                    })
                 );
         }
     }

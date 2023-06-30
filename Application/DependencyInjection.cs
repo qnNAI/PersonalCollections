@@ -13,6 +13,7 @@ using Application.Common.Contracts.Services;
 using Application.Services;
 using Microsoft.Extensions.Configuration;
 using Application.Models.Email;
+using Application.Helpers;
 
 namespace Application
 {
@@ -35,6 +36,8 @@ namespace Application
                .Get<EmailConfiguration>();
 
             services.AddSingleton(emailConfig);
+
+            services.AddSingleton<CollectionTypeMapping>();
 
             return services;
         }
