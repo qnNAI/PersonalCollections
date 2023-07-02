@@ -150,14 +150,14 @@ namespace Infrastructure.Persistence.Contexts
                     {
                         Id = Guid.NewGuid().ToString(),
                         ConcurrencyStamp = Guid.NewGuid().ToString(),
-                        Name = "USER",
+                        Name = "User",
                         NormalizedName = "USER"
                     },
                     new IdentityRole
                     {
                         Id = Guid.NewGuid().ToString(),
                         ConcurrencyStamp = Guid.NewGuid().ToString(),
-                        Name = "ADMIN",
+                        Name = "Admin",
                         NormalizedName = "ADMIN"
                     }
                 );
