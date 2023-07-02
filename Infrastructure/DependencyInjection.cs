@@ -8,6 +8,7 @@ using Application.Common.Contracts.Services;
 using Application.Services;
 using Domain.Entities.Identity;
 using Infrastructure.Persistence.Contexts;
+using Infrastructure.Services.CloudStorage;
 using Infrastructure.Services.Email;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,7 @@ namespace Infrastructure {
 			services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
 
 			services.AddScoped<IEmailService, EmailService>();
+			services.AddSingleton<ICloudStorageService, GoogleCloudStorageService>();
 
 			return services;
         }
