@@ -4,6 +4,7 @@ using Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230630143010_RenameTypes")]
+    partial class RenameTypes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -175,27 +178,27 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "6cf6cb31-a2c9-4384-997c-fd165518b44a",
+                            Id = "bafd6d28-009e-4d16-aae5-5a17ea93bd3f",
                             Name = "INTEGER"
                         },
                         new
                         {
-                            Id = "de145358-37c7-4530-8674-b233d798232c",
+                            Id = "824127c4-4800-4bae-a0cb-315c89230dc1",
                             Name = "STRING"
                         },
                         new
                         {
-                            Id = "51a7d602-858c-44fb-86c8-54cc95a8e4d2",
+                            Id = "b0220bcb-9478-4589-80cf-27fefa24dfb2",
                             Name = "TEXT"
                         },
                         new
                         {
-                            Id = "2bd87c49-8c96-430d-b09b-fc92a18c71e4",
+                            Id = "c5d215b6-a4c6-4250-aadb-b4049bd092fb",
                             Name = "BOOLEAN"
                         },
                         new
                         {
-                            Id = "cd898333-453c-4257-9452-1d5363ac143b",
+                            Id = "a56ef62e-1e7a-442e-ac8b-7fd104176a3c",
                             Name = "DATETIME"
                         });
                 });
@@ -220,72 +223,72 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "cc506c9a-6a8a-4466-bb7a-dc8fd123de0b",
+                            Id = "9f49d045-70c0-4b18-a744-095340473f6a",
                             Name = "Books"
                         },
                         new
                         {
-                            Id = "00442e49-f450-4de5-870d-09dd6117213e",
+                            Id = "63eeee00-750a-4929-bfc9-9b9047f15429",
                             Name = "Coins"
                         },
                         new
                         {
-                            Id = "37175886-3152-4d98-9e92-f9d5cb67eea8",
+                            Id = "e53d6106-3f88-4a8e-ae09-93ca921673cf",
                             Name = "Comics"
                         },
                         new
                         {
-                            Id = "c479633b-2b44-4c75-ae63-310afc425594",
+                            Id = "370664dd-bf8a-4bbf-8312-501eb3bf758c",
                             Name = "Postcards"
                         },
                         new
                         {
-                            Id = "7ade4bd0-a41f-41be-83ca-b92cd2e0090b",
+                            Id = "16a91c99-c3f0-4a44-a2d6-49d66bb6fb79",
                             Name = "Trading Cards"
                         },
                         new
                         {
-                            Id = "819944c7-df16-46bc-9d0f-c82afa5ef844",
+                            Id = "ddfc730a-53b7-419d-b8e0-d1c25d4f5b5b",
                             Name = "Autographs"
                         },
                         new
                         {
-                            Id = "30bf4417-668b-4baf-a848-c0faee2b23d8",
+                            Id = "ee6d62f3-a860-4e27-9346-4281ac74b482",
                             Name = "Toy Cars"
                         },
                         new
                         {
-                            Id = "87cf4184-6234-4a0f-8f9d-9a22de1383d9",
+                            Id = "0e1a5b2d-5718-4573-bf06-2fd6d87deb07",
                             Name = "Dolls"
                         },
                         new
                         {
-                            Id = "84d2600c-2ad7-4ee0-aee1-4702265867d4",
+                            Id = "138d6368-e50f-4403-849e-97b88e694111",
                             Name = "Model Trains"
                         },
                         new
                         {
-                            Id = "49ddc6e5-e7c2-49a2-b977-01850d9601eb",
+                            Id = "b93a6c26-cb48-4018-89b9-01aede4dadb1",
                             Name = "Jewelry"
                         },
                         new
                         {
-                            Id = "02521f63-352d-4f2d-bdba-a6411d30ec57",
+                            Id = "4b00af0a-be25-4702-b1fd-a4d968ce282d",
                             Name = "Board Games"
                         },
                         new
                         {
-                            Id = "0e5d1e5b-3f6e-42c7-af74-5722c650111d",
+                            Id = "9281bacd-22ac-4b3e-b34e-cc8a657f5a61",
                             Name = "Candles"
                         },
                         new
                         {
-                            Id = "835e9cdc-e989-4a18-9966-138eaca94fd3",
+                            Id = "38af7c78-fce7-4da1-a625-5d72f345d96a",
                             Name = "Hats"
                         },
                         new
                         {
-                            Id = "18f5b27a-486d-4f9e-a706-b80f43f979b5",
+                            Id = "6928380b-5d47-4157-9db7-0060e56527a5",
                             Name = "Lighters"
                         });
                 });
@@ -389,22 +392,6 @@ namespace Infrastructure.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "f244e4db-c521-49d4-826b-2c9945c22478",
-                            ConcurrencyStamp = "70658725-3022-47e5-9d85-a8b018fbbc5b",
-                            Name = "USER",
-                            NormalizedName = "USER"
-                        },
-                        new
-                        {
-                            Id = "9d350b27-845d-41a5-a99a-9baa9ce7eded",
-                            ConcurrencyStamp = "26e08d1a-8f0f-4318-8dcc-a9f6e76376fe",
-                            Name = "ADMIN",
-                            NormalizedName = "ADMIN"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

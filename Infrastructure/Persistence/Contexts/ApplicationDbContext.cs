@@ -2,6 +2,7 @@
 using Application.Helpers;
 using Domain.Entities.Identity;
 using Domain.Entities.Items;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -141,6 +142,24 @@ namespace Infrastructure.Persistence.Contexts
                         Id = Guid.NewGuid().ToString(),
                         Name = x
                     })
+                );
+
+            builder.Entity<IdentityRole>()
+                .HasData(
+                    new IdentityRole
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        ConcurrencyStamp = Guid.NewGuid().ToString(),
+                        Name = "USER",
+                        NormalizedName = "USER"
+                    },
+                    new IdentityRole
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        ConcurrencyStamp = Guid.NewGuid().ToString(),
+                        Name = "ADMIN",
+                        NormalizedName = "ADMIN"
+                    }
                 );
         }
     }
