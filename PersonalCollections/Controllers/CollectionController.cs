@@ -3,6 +3,7 @@ using Application.Common.Contracts.Services;
 using Application.Models.Collection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PersonalCollections.Filters;
 
 namespace PersonalCollections.Controllers
 {
@@ -23,6 +24,8 @@ namespace PersonalCollections.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
+        [PersonalInfoFilter]
         public async Task<IActionResult> AddCollection(AddCollectionRequest request)
         {
             if (!ModelState.IsValid)
@@ -40,6 +43,7 @@ namespace PersonalCollections.Controllers
 
         [HttpPost]
         [Authorize]
+        [PersonalInfoFilter]
         public async Task<IActionResult> RemoveCollection(string collectionId)
         {
             var result = await _collectionService.RemoveAsync(collectionId);
@@ -48,6 +52,7 @@ namespace PersonalCollections.Controllers
 
         [HttpGet]
         [Authorize]
+        [PersonalInfoFilter]
         public async Task<IActionResult> CollectionsManagement(string userId)
         {
             TempData["UserId"] = userId;
