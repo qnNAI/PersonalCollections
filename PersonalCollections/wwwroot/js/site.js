@@ -114,3 +114,84 @@ function getCheckedUsers() {
     let checked = [...checkboxes].filter(x => x.checked === true).map(x => x.id);
     return checked;
 }
+
+function addField() {
+    let container = document.getElementById('fields');
+    let select = document.getElementById('type-select');
+    let div = document.createElement('div');
+    div.id = `field-container-${counter}`;
+    div.classList.add('input-group');
+    div.classList.add('mb-3');
+    div.innerHTML = `
+        <input id="field-name-${counter}" type="text" name="Fields[index].Name" class="form-control" placeholder="Field name" required>
+        <span class="input-group-text">${select.options[select.selectedIndex].text}</span>
+        <input id="field-type-${counter}" type="hidden" value=${select.value} name="Fields[index].TypeId" />
+        <button type="button" class="btn btn-danger" onclick="removeField('field-container-${counter}')">X</button>
+    `;
+    counter++;
+    container.append(div);
+}
+
+function removeField(id) {
+    let field = document.getElementById(id);
+    field.remove();
+}
+
+function arrangeTypes() {
+    let index = 0;
+    let fields = document.querySelectorAll('[id^="field-container"]');
+
+    for (let field of fields) {
+        let postfix = field.id.substring(16);
+
+        let fieldName = document.getElementById(`field-name-${postfix}`);
+        fieldName.name = fieldName.name.replace('index', index);
+
+        let fieldType = document.getElementById(`field-type-${postfix}`)
+        fieldType.name = fieldType.name.replace('index', index);
+
+        index++;
+    }
+
+}
+
+function setupFileInput() {
+    let dropEl = document.getElementById('drop-area');
+    let fileInput = document.getElementById('file-input');
+    
+    dropEl.ondragover = (evt) => { evt.preventDefault(); };
+
+    dropEl.ondragenter = (evt) => { 
+        evt.preventDefault();
+        dropEl.classList.add('bg-primary-subtle');
+    };
+
+    dropEl.ondragleave = (evt) => {
+        dropEl.classList.remove('bg-primary-subtle');
+    };
+
+    dropEl.ondrop = (evt) => {
+        evt.preventDefault();
+        fileInput.files = evt.dataTransfer.files;
+        let files = [...evt.dataTransfer.files]
+        previewFile(files[0]);
+    };
+
+    fileInput.onchange = (evt) => {
+        let files = [...fileInput.files]
+        previewFile(files[0]);
+    };
+}
+
+function previewFile(file) {
+    let reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = function () {
+        let image = document.getElementById('image-preview');
+        let imageText = document.getElementById('drop-area-text');
+        image.classList.remove('d-none');
+        imageText.classList.add('d-none');
+
+        image.src = reader.result;
+    }
+}

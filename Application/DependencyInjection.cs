@@ -28,6 +28,7 @@ namespace Application
             services.AddScoped<IMapper, Mapper>();
 
             services.AddScoped<IIdentityService, IdentityService>();
+            services.AddScoped<ICollectionService, CollectionService>();
 
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 

@@ -24,3 +24,18 @@ body {
 .social-btn {
     width: fit-content;
 }
+
+
+#drop-area {
+    width: 50%;
+    aspect-ratio: 1/1;
+    border-radius: 5px;
+}
+
+    #drop-area img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        overflow: hidden;
+        border-radius: 5px;
+    }

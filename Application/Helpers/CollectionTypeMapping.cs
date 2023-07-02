@@ -10,11 +10,11 @@ namespace Application.Helpers
     {
         public Dictionary<string, Type> TypeMappings => new()
         {
-            { "INT", typeof(int) },
-            { "STR", typeof(string) },
+            { "INTEGER", typeof(int) },
+            { "STRING", typeof(string) },
             { "TEXT", typeof(string) },
-            { "BOOL", typeof(bool) },
-            { "DATE", typeof(DateTime) }
+            { "BOOLEAN", typeof(bool) },
+            { "DATETIME", typeof(DateTime) }
         };
     }
 }
