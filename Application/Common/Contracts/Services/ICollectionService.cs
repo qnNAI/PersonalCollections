@@ -10,5 +10,7 @@ namespace Application.Common.Contracts.Services
     public interface ICollectionService
     {
         Task AddAsync(AddCollectionRequest request);
+        Task<RemoveCollectionResponse> RemoveAsync(string collectionId);
+        Task<IEnumerable<CollectionDto>> GetCollectionsAsync(string userId);
     }
 }

@@ -13,6 +13,7 @@ namespace Domain.Entities.Items {
         public string Name { get; set; } = null!;
         public string Description { get; set; } = null!;
         public string? ImageUrl { get; set; }
+        public DateTime CreationDate { get; set; }
 
         public string CollectionThemeId { get; set; } = null!;
         public string UserId { get; set; } = null!;

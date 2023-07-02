@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Application.Common.Contracts.Services;
 using Application.Models.Collection;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PersonalCollections.Controllers
@@ -30,12 +31,28 @@ namespace PersonalCollections.Controllers
             }
 
             var userId = TempData.Peek("UserId")?.ToString();
-            //request.UserId = userId;
-            request.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            request.UserId = userId;
 
             await _collectionService.AddAsync(request);
 
-            return Ok();
+            return RedirectToAction(nameof(CollectionsManagement), new { userId });
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> RemoveCollection(string collectionId)
+        {
+            var result = await _collectionService.RemoveAsync(collectionId);
+            return result.Succeeded ? Ok() : BadRequest();
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> CollectionsManagement(string userId)
+        {
+            TempData["UserId"] = userId;
+            var collections = await _collectionService.GetCollectionsAsync(userId);
+            return View(collections);
         }
     }
 }

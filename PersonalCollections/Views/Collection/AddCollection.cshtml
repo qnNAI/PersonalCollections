@@ -12,7 +12,7 @@
 
 <h3 class="mt-5">Collection creation</h3>
 
-<div class="mt-5 row">
+<div class="mt-5 row mb-5">
     <div class="col-lg-4 col-md-6">
         <form asp-action="AddCollection" enctype="multipart/form-data">
             <div id="drop-area" class="mb-3 border border-primary d-flex justify-content-center align-items-center">
@@ -75,3 +75,7 @@
     }, false);
 
 </script>
+
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

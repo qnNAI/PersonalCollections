@@ -19,7 +19,7 @@ function loadUsers(url, page = 1) {
     }).fail(result => {
         let location = result.getResponseHeader('Location');
         window.location.replace(location);
-    });;
+    });
 }
 
 function refreshUsers(result) {
@@ -88,7 +88,6 @@ function manageUsers(url, loadUrl) {
         });
 
 }
-
 
 function sendSelectedUsers(url, selected) {
     return $.ajax({
@@ -184,14 +183,48 @@ function setupFileInput() {
 }
 
 function previewFile(file) {
+    let image = document.getElementById('image-preview');
+    let imageText = document.getElementById('drop-area-text');
+
+    if (file === undefined) {
+        image.src = '';
+        image.classList.add('d-none');
+        imageText.classList.remove('d-none');
+        return;
+    }
+
     let reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = function () {
-        let image = document.getElementById('image-preview');
-        let imageText = document.getElementById('drop-area-text');
         image.classList.remove('d-none');
         imageText.classList.add('d-none');
 
         image.src = reader.result;
     }
+}
+
+function removeCollection(url, id) {
+    $.ajax({
+        url: `${url}`,
+        type: 'POST',
+        cache: false,
+        async: true,
+        dataType: 'html',
+        data: {
+            "collectionId": id
+        }
+    }).done(() => {
+        document.getElementById(id).remove();
+    }).fail(() => {
+        showWarning('Failed to remove collection!');
+    });
+
+}
+
+function showWarning(message) {
+    const toastLive = document.getElementById('liveToast')
+
+    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLive);
+    document.getElementById('toastBody').innerText = message;
+    toastBootstrap.show()
 }

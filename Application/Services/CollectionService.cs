@@ -22,13 +22,13 @@ namespace Application.Services
         {
             var collection = request.Adapt<Collection>();
             collection.Id = Guid.NewGuid().ToString();
+            collection.CreationDate = DateTime.UtcNow;
 
             if (request.Image is not null)
             {
                 var imageUrl = await _cloudStorageService.UploadAsync(request.Image, Guid.NewGuid().ToString());
                 collection.ImageUrl = imageUrl;
             }
-
 
             var fields = request.Fields.Select(x => new CollectionField
             {
@@ -41,6 +41,32 @@ namespace Application.Services
             _context.Collections.Add(collection);
 
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<RemoveCollectionResponse> RemoveAsync(string collectionId)
+        {
+            var collection = await _context.Collections.FindAsync(collectionId);
+            if (collection is null)
+            {
+                return new RemoveCollectionResponse { Succeeded = false };
+            }
+
+            _context.Collections.Remove(collection);
+            await _context.SaveChangesAsync();
+
+            return new RemoveCollectionResponse { Succeeded = true };
+        }
+
+        public async Task<IEnumerable<CollectionDto>> GetCollectionsAsync(string userId)
+        {
+            var collections = await _context.Collections
+                .Where(x => x.UserId == userId)
+                .Include(x => x.Theme)
+                .OrderByDescending(x => x.CreationDate)
+                .ProjectToType<CollectionDto>()
+                .ToListAsync();
+
+            return collections;
         }
     }
 }
