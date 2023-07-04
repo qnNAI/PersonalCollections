@@ -44,9 +44,10 @@
 
             <label class="form-label">Fields</label>
             <div class="" id="fields">
-                
             </div>
-            <div class="input-group mb-3">
+            <span asp-validation-for="Fields" class="text-danger"></span>
+
+            <div class="input-group mb-3 mt-3">
                 <select class="form-select" id="type-select">
                     @foreach(var type in await context.CollectionFieldTypes.ToListAsync())
                     {

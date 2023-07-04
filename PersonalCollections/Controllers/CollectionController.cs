@@ -17,6 +17,7 @@ namespace PersonalCollections.Controllers
             _collectionService = collectionService;
         }
 
+        [HttpGet]
         public IActionResult AddCollection()
         {
             return View();
