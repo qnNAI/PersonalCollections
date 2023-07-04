@@ -228,3 +228,20 @@ function showWarning(message) {
     document.getElementById('toastBody').innerText = message;
     toastBootstrap.show()
 }
+
+function setTags() {
+    let tags = document.getElementsByClassName('tag');
+    let form = document.getElementById('add-item-form');
+    let counter = 0;
+    for (let tag of tags) {
+        let tagInput = document.createElement('input');
+        tagInput.setAttribute('type', 'hidden');
+        tagInput.setAttribute('name', `Tags[${counter}].Name`);
+        tagInput.value = tag.innerText;
+
+        form.append(tagInput);
+
+        counter++;
+    }
+
+}

@@ -29,6 +29,7 @@ namespace Application
 
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<ICollectionService, CollectionService>();
+            services.AddScoped<IItemService, ItemService>();
 
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 

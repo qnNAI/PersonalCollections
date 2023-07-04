@@ -16,5 +16,6 @@ namespace Application.Helpers
             { "BOOLEAN", typeof(bool) },
             { "DATETIME", typeof(DateTime) }
         };
+
     }
 }
