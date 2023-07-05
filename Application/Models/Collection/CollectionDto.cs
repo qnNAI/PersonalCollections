@@ -18,6 +18,6 @@ namespace Application.Models.Collection
         public CollectionThemeDto Theme { get; set; } = null!;
         public AuthorDto Author { get; set; } = null!;
 
-        public ICollection<ItemDto> Items { get; set; } = new List<ItemDto>();
+        public List<CollectionFieldDto> Fields { get; set; } = new List<CollectionFieldDto>();
     }
 }

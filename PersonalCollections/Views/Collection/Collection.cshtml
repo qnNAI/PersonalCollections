@@ -24,14 +24,14 @@
     </div>
 }
 
-<div class="mb-3 row">
+<div class="mb-2 row">
     <label asp-for="Theme" class="col-2 col-lg-1 col-form-label">Theme</label>
     <div class="col-5">
         <input type="text" readonly class="form-control-plaintext" value="@Model.Theme.Name">
     </div>
 </div>
 
-<div class="mb-3 row">
+<div class="mb-2 row">
     <label asp-for="Author" class="col-2 col-lg-1 col-form-label">Author</label>
     <div class="col-5">
         <input type="text" readonly class="form-control-plaintext" value="@Model.Author.UserName">
@@ -43,4 +43,42 @@
     <div class="col-5 alert alert-secondary">
         @Html.Raw(Markdown.ToHtml(@Model.Description, mdPipeline))
     </div>
+</div>
+
+<div class="mb-5 mt-5 table-responsive">
+    <table class="table table-hover table-striped" id="itemsTable">
+        <thead class="table-dark">
+            <tr>
+                <th>Name</th>
+                @foreach(var field in Model.Fields) {
+                    <th>@field.Name</th>
+                }
+                <th></th>
+            </tr>
+        </thead>
+        <tbody class="table-group-divider" id="tBody">
+        </tbody>
+    </table>
+
+    <div class="d-flex flex-row justify-content-center w-100 mb-5">
+        <div class="spinner-border text-success" role="status" id="loader">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <nav>
+        <ul class="pagination">
+            <li class="page-item" id="prevBtn">
+                <a class="page-link" onclick="loadPrevPage('@Url.Action("Items")')" href="#">Previous</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link">
+                    <span id="currentPage"></span> / <span id="totalPages"></span>
+                </a>
+            </li>
+            <li class="page-item" id="nextBtn">
+                <a class="page-link" onclick="loadNextPage('@Url.Action("Items")')" href="#">Next</a>
+            </li>
+        </ul>
+    </nav>
 </div>
