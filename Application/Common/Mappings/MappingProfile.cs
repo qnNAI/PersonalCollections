@@ -25,6 +25,10 @@ namespace Application.Common.Mappings {
             TypeAdapterConfig<AddCollectionRequest, Collection>
                 .NewConfig()
                 .Ignore(nameof(AddCollectionRequest.Fields));
+
+            TypeAdapterConfig<Collection, CollectionDto>
+                .NewConfig()
+                .Map(dest => dest.Author, src => src.User);
         }
     }
 }

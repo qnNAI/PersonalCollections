@@ -10,7 +10,6 @@ namespace Domain.Entities.Items {
     public class Item : Entity {
 
         public string Name { get; set; } = null!;
-
         public string CollectionId { get; set; } = null!;
 
         [ForeignKey(nameof(CollectionId))]

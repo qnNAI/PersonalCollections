@@ -4,6 +4,7 @@ using Application.Models.Collection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PersonalCollections.Filters;
+using PersonalCollections.Models;
 
 namespace PersonalCollections.Controllers
 {
@@ -18,6 +19,8 @@ namespace PersonalCollections.Controllers
         }
 
         [HttpGet]
+        [Authorize]
+        [PersonalInfoFilter]
         public IActionResult AddCollection()
         {
             return View();
@@ -59,6 +62,16 @@ namespace PersonalCollections.Controllers
             TempData["UserId"] = userId;
             var collections = await _collectionService.GetCollectionsAsync(userId);
             return View(collections);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Collection([FromQuery] string collectionId) {
+            var collection = await _collectionService.GetByIdAsync(collectionId);
+            if (collection is null) {
+                return View("Error", new ErrorViewModel { Message = $"Collection with id={collectionId} not found!" });
+            }
+
+            return View(collection);
         }
     }
 }

@@ -17,7 +17,6 @@ namespace PersonalCollections.Controllers
         [HttpGet]
         public async Task<IActionResult> AddItem(string collectionId)
         {
-            collectionId = "ccce6d8b-9bb9-431f-bb14-862b89f1e960";
             var fields = await _itemService.GetItemFieldsAsync(collectionId);
             var request = new AddItemRequest
             {

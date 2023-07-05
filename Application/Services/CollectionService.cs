@@ -68,5 +68,15 @@ namespace Application.Services
 
             return collections;
         }
+
+        public async Task<CollectionDto?> GetByIdAsync(string id) {
+            var collection = (await _context.Collections
+                .Include(x => x.Items)
+                .Include(x => x.Theme)
+                .Include(x => x.User)
+                .FirstOrDefaultAsync(x => x.Id == id))
+                ?.Adapt<CollectionDto>();
+            return collection;
+        }
     }
 }

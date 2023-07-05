@@ -19,10 +19,5 @@ namespace PersonalCollections.Controllers
 		{
 			return View();
 		}
-
-		[Authorize(Roles = "User")]
-		public IActionResult Test() {
-			return View("Error");
-		}
 	}
 }
