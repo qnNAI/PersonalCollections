@@ -8,6 +8,7 @@ using Application.Common.Contracts.Services;
 using Application.Models.Item;
 using Domain.Entities.Items;
 using Mapster;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services
@@ -91,6 +92,35 @@ namespace Application.Services
                 .ToListAsync();
 
             return tags;
+        }
+
+        public async Task<IEnumerable<ItemDto>> GetItemsAsync(GetItemsRequest request, CancellationToken cancellationToken) {
+            var itemsQuery = _context.Items.Where(x => x.CollectionId == request.CollectionId);
+
+            if (!string.IsNullOrEmpty(request.Filter)) {
+                itemsQuery = itemsQuery.Where(x => EF.Functions.Contains(x.Name, request.Filter));
+            }
+
+            itemsQuery = request.Order switch {
+                "asc" => itemsQuery.OrderBy(x => x.Name),
+                "desc" => itemsQuery.OrderByDescending(x => x.Name),
+                _ => itemsQuery.OrderBy(x => x.Name),
+            };
+
+            var items = await itemsQuery
+                .Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .Include(x => x.Fields)
+                    .ThenInclude(x => x.CollectionField)
+                        .ThenInclude(x => x.FieldType)
+                .ProjectToType<ItemDto>()
+                .ToListAsync(cancellationToken);
+
+            return items;
+        }
+
+        public Task<int> CountItemsAsync(string collectionId, CancellationToken cancellationToken = default) {
+            return _context.Items.Where(x => x.CollectionId == collectionId).CountAsync(cancellationToken);
         }
     }
 }

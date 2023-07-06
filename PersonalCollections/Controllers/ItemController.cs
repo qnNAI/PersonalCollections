@@ -1,25 +1,22 @@
 ﻿using Application.Common.Contracts.Services;
 using Application.Models.Item;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PersonalCollections.Controllers
 {
 
-    public class ItemController : Controller
-    {
+    public class ItemController : Controller {
         private readonly IItemService _itemService;
 
-        public ItemController(IItemService itemService)
-        {
+        public ItemController(IItemService itemService) {
             _itemService = itemService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> AddItem(string collectionId)
-        {
+        public async Task<IActionResult> AddItem(string collectionId) {
             var fields = await _itemService.GetItemFieldsAsync(collectionId);
-            var request = new AddItemRequest
-            {
+            var request = new AddItemRequest {
                 CollectionId = collectionId,
                 Fields = fields
             };
@@ -28,24 +25,39 @@ namespace PersonalCollections.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddItem(AddItemRequest request)
-        {
-            if (!ModelState.IsValid)
-            {
+        public async Task<IActionResult> AddItem(AddItemRequest request) {
+            if(!ModelState.IsValid) {
                 return View(request);
             }
-            
-            await _itemService.AddItemAsync(request);
 
-            return Ok();
+            var response = await _itemService.AddItemAsync(request);
+            if (!response.Succeeded) {
+                foreach(var error in response.Errors) {
+                    ModelState.AddModelError("", error);
+                }
+                var fields = await _itemService.GetItemFieldsAsync(request.CollectionId);
+                request.Fields = fields;
+                return View(request);
+            }
+
+            return RedirectToAction(nameof(CollectionController.Collection), "Collection", new { collectionId = request.CollectionId });
         }
 
         [HttpGet]
-        public async Task<IActionResult> TagAutocomplete([FromQuery] string term)
-        {
+        public async Task<IActionResult> TagAutocomplete([FromQuery] string term) {
             var tags = await _itemService.GetTagsByPrefixAsync(term);
 
             return Json(tags.Select(x => x.Name).ToList());
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Items(GetItemsRequest request, CancellationToken cancellationToken = default) {
+            var items = await _itemService.GetItemsAsync(request, cancellationToken);
+
+            ViewData["page"] = request.Page;
+            ViewData["total"] = (int)Math.Ceiling((double)(await _itemService.CountItemsAsync(request.CollectionId, cancellationToken)) / request.PageSize);
+
+            return PartialView("_ItemsPartial", items);
         }
     }
 }

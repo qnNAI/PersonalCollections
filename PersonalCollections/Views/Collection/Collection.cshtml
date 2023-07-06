@@ -1,6 +1,8 @@
-﻿@using Application.Models.Collection;
+﻿@using Application.Helpers;
+@using Application.Models.Collection;
 @using Markdig;
 @model CollectionDto
+@inject CollectionTypes collectionTypes;
 
 @{
     ViewData["Title"] = "Collection";
@@ -40,17 +42,41 @@
 
 <div class="mb-3">
     <label asp-for="Description" class="col-12 col-form-label">Description</label>
-    <div class="col-5 alert alert-secondary">
+    <div class="col-12 col-lg-5 alert alert-secondary">
         @Html.Raw(Markdown.ToHtml(@Model.Description, mdPipeline))
     </div>
 </div>
 
-<div class="mb-5 mt-5 table-responsive">
+<div class="d-flex flex-row mb-3 mt-5 gap-2 align-items-start">
+    <select class="form-select w-auto" id="order-select">
+        <option selected value="asc">Ascending</option>
+        <option value="desc">Descending</option>
+    </select>
+
+    <div class="d-flex" role="search" id="filter">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success" type="button">Search</button>
+    </div>
+</div>
+<div class="mb-3">
+    <a class="btn btn-success" href="@Url.Action("AddItem", "Item", new { collectionId = Model.Id })">
+        New
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle ms-1 mb-1" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+        </svg>
+    </a>
+</div>
+
+<div class="mb-5  table-responsive">
+
     <table class="table table-hover table-striped" id="itemsTable">
         <thead class="table-dark">
             <tr>
                 <th>Name</th>
-                @foreach(var field in Model.Fields) {
+                @foreach(var field in Model.Fields
+                    .Where(x => x.FieldType.Name == collectionTypes.String || x.FieldType.Name == collectionTypes.Date)
+                    .OrderBy(x => x.Order)) {
                     <th>@field.Name</th>
                 }
                 <th></th>
@@ -82,3 +108,10 @@
         </ul>
     </nav>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        loadItems('@Url.Action("Items", "Item")', '@Model.Id', 1);
+
+    }, false);
+</script>

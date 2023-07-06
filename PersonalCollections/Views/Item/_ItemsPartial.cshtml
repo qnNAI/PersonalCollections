@@ -1,0 +1,28 @@
+﻿@using Application.Helpers;
+@using Application.Models.Item;
+@model IEnumerable<ItemDto>;
+@inject CollectionTypes collectionTypes;
+
+@foreach(var item in Model) {
+    <tr>
+        <td>@item.Name</td>
+        @foreach(var field in item.Fields
+            .Where(x => x.CollectionField.FieldType.Name == collectionTypes.String || x.CollectionField.FieldType.Name == collectionTypes.Date)
+            .OrderBy(x => x.CollectionField.Order))
+        {
+            if (field.CollectionField.FieldType.Name == collectionTypes.Date)
+            {
+                <td>
+                    <input type="datetime-local" readonly class="form-control-plaintext" value="@field.Value">
+                </td>
+            } 
+            else
+            {
+                <td>@field.Value</td>
+            }
+        }
+    </tr>
+}
+
+<input type="hidden" id="currentPageInput" value="@ViewData["page"]" />
+<input type="hidden" id="totalPagesInput" value="@ViewData["total"]" />

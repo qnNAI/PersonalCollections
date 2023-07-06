@@ -15,14 +15,14 @@ function loadUsers(url, page = 1) {
             "pageSize": PAGE_SIZE
         }
     }).done(result => {
-        refreshUsers(result);
+        refreshTable(result);
     }).fail(result => {
         let location = result.getResponseHeader('Location');
         window.location.replace(location);
     });
 }
 
-function refreshUsers(result) {
+function refreshTable(result) {
     let body = document.getElementById('tBody');
     body.innerHTML = result;
 
@@ -243,5 +243,33 @@ function setTags() {
 
         counter++;
     }
+
+}
+
+function loadItems(url, collectionId, page = 1) {
+    let order = document.getElementById('order-select').value;
+    let filter = document.getElementById('filter').value;
+
+    $.ajax({
+        beforeSend: () => $('#loader').show(),
+        complete: () => $('#loader').hide(),
+        url: `${url}`,
+        type: 'GET',
+        cache: false,
+        async: true,
+        dataType: 'html',
+        data: {
+            "page": page,
+            "pageSize": PAGE_SIZE,
+            "order": order,
+            "filter": filter,
+            "collectionId": collectionId
+        }
+    }).done(result => {
+        refreshTable(result);
+    }).fail(result => {
+        let location = result.getResponseHeader('Location');
+        window.location.replace(location);
+    });
 
 }

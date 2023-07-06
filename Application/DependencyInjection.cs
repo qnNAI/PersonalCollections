@@ -39,7 +39,7 @@ namespace Application
 
             services.AddSingleton(emailConfig);
 
-            services.AddSingleton<CollectionTypeMapping>();
+            services.AddSingleton<CollectionTypes>();
 
             return services;
         }

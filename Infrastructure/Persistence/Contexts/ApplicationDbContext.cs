@@ -17,9 +17,9 @@ namespace Infrastructure.Persistence.Contexts
 {
 	internal class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
 	{
-        private readonly CollectionTypeMapping _typeMapping;
+        private readonly CollectionTypes _typeMapping;
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, CollectionTypeMapping typeMapping) : base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, CollectionTypes typeMapping) : base(options)
         {
             _typeMapping = typeMapping;
         }
@@ -55,7 +55,7 @@ namespace Infrastructure.Persistence.Contexts
                 .HasIndex(e => e.Name)
                 .IsUnique();
 
-            _SeedData(builder);
+            //_SeedData(builder);
         }
 
         private void _SeedData(ModelBuilder builder)
@@ -137,7 +137,7 @@ namespace Infrastructure.Persistence.Contexts
 
             builder.Entity<CollectionFieldType>()
                 .HasData(
-                    _typeMapping.TypeMappings.Keys.Select(x => new CollectionFieldType
+                    _typeMapping.Types.Select(x => new CollectionFieldType
                     {
                         Id = Guid.NewGuid().ToString(),
                         Name = x
