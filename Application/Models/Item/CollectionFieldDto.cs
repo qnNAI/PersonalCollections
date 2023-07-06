@@ -11,6 +11,7 @@ namespace Application.Models.Item
         public string Id { get; set; } = null!;
         public string CollectionId { get; set; } = null!;
         public string Name { get; set; } = null!;
+        public long Order { get; set; }
 
         public FieldTypeDto FieldType { get; set; } = null!;
     }

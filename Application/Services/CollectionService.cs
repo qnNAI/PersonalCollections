@@ -34,7 +34,8 @@ namespace Application.Services
             {
                 Id = Guid.NewGuid().ToString(),
                 Name = x.Name,
-                CollectionFieldTypeId = x.TypeId
+                CollectionFieldTypeId = x.TypeId,
+                Order = DateTime.Now.Ticks
             });
 
             collection.Fields.AddRange(fields);
@@ -72,6 +73,7 @@ namespace Application.Services
         public async Task<CollectionDto?> GetByIdAsync(string id) {
             var collection = (await _context.Collections
                 .Include(x => x.Fields)
+                    .ThenInclude(x => x.FieldType)
                 .Include(x => x.Theme)
                 .Include(x => x.User)
                 .FirstOrDefaultAsync(x => x.Id == id))
