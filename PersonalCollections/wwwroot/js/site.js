@@ -54,6 +54,14 @@ function refreshTable(result) {
             nextBtn.classList.remove('disabled');
         }
     }
+    if (+totalPages === 0) {
+        if (!prevBtn.classList.contains('disabled')) {
+            prevBtn.classList.add('disabled');
+        }
+        if (!nextBtn.classList.contains('disabled')) {
+            nextBtn.classList.add('disabled');
+        }
+    }
 }
 
 function loadPrevPage(url) {

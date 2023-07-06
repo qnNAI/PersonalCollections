@@ -8,9 +8,11 @@ namespace PersonalCollections.Controllers
 
     public class ItemController : Controller {
         private readonly IItemService _itemService;
+        private readonly ICollectionService _collectionService;
 
-        public ItemController(IItemService itemService) {
+        public ItemController(IItemService itemService, ICollectionService collectionService) {
             _itemService = itemService;
+            _collectionService = collectionService;
         }
 
         [HttpGet]
@@ -53,11 +55,16 @@ namespace PersonalCollections.Controllers
         [HttpGet]
         public async Task<IActionResult> Items(GetItemsRequest request, CancellationToken cancellationToken = default) {
             var items = await _itemService.GetItemsAsync(request, cancellationToken);
+            var collection = await _collectionService.GetByIdAsync(request.CollectionId);
 
             ViewData["page"] = request.Page;
             ViewData["total"] = (int)Math.Ceiling((double)(await _itemService.CountItemsAsync(request.CollectionId, cancellationToken)) / request.PageSize);
 
-            return PartialView("_ItemsPartial", items);
+            return PartialView("_ItemsPartial", new GetItemsResponse
+            {
+                UserId = collection.UserId,
+                Items = items
+            });
         }
     }
 }

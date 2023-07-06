@@ -15,6 +15,8 @@ namespace Application.Models.Collection
         public string? ImageUrl { get; set; }
         public DateTime CreationDate { get; set; }
 
+        public string UserId { get; set; } = null!;
+
         public CollectionThemeDto Theme { get; set; } = null!;
         public AuthorDto Author { get; set; } = null!;
 
