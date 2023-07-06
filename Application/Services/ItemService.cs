@@ -36,15 +36,28 @@ namespace Application.Services
             return fields;
         } 
 
-        public async Task AddItemAsync(AddItemRequest request)
+        public async Task<AddItemResponse> AddItemAsync(AddItemRequest request)
         {
             var item = request.Adapt<Item>();
+            var isExists = await _context.Items.AnyAsync(x => x.CollectionId == item.CollectionId && x.Name == item.Name);
+            if (isExists) {
+                return new AddItemResponse {
+                    Succeeded = false,
+                    Errors = new[] {
+                        "Item already exists!"
+                    }
+                };
+            }
+            
+
             item.Id = Guid.NewGuid().ToString();
 
             await _PrepareTagsAsync(item);
 
             _context.Items.Add(item);
             await _context.SaveChangesAsync();
+
+            return new AddItemResponse { Succeeded = true };
         }
 
         private async Task _PrepareTagsAsync(Item item)

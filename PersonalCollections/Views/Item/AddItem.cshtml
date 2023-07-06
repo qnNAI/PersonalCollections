@@ -18,7 +18,7 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <input asp-for="CollectionId" value="@Model.CollectionId" type="hidden" />
-            @foreach(var field in Model.Fields)
+            @foreach(var field in Model.Fields.OrderBy(x => x.CollectionField.Order))
             {
                 <div class="form-group mb-3">
                     <label asp-for="Fields[fieldCounter].Value" class="form-label">@field.CollectionField.Name</label>

@@ -11,6 +11,6 @@ namespace Application.Common.Contracts.Services
     {
         Task<List<ItemFieldDto>> GetItemFieldsAsync(string collectionId);
         Task<IEnumerable<TagDto>> GetTagsByPrefixAsync(string prefix);
-        Task AddItemAsync(AddItemRequest request);
+        Task<AddItemResponse> AddItemAsync(AddItemRequest request);
     }
 }
