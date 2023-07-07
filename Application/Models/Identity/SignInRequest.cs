@@ -8,7 +8,7 @@ namespace Application.Models.Identity
 {
 	public class SignInRequest
 	{
-		public string Username { get; set; } = null!;
+		public string Login { get; set; } = null!;
 		public string Password { get; set; } = null!;
 	}
 }

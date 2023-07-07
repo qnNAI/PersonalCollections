@@ -45,7 +45,8 @@ namespace PersonalCollections.Controllers {
                 return View(request);
             }
 
-            var result = await _signInManager.PasswordSignInAsync(request.Username, request.Password, isPersistent: true, lockoutOnFailure: false);
+            var existing = await _userManager.FindByEmailAsync(request.Login);
+            var result = await _signInManager.PasswordSignInAsync(existing is null ? request.Login : existing.UserName!, request.Password, isPersistent: true, lockoutOnFailure: false);
 
             if (result.IsNotAllowed) {
                 ModelState.AddModelError("", "Authentication failed. User is locked!");
