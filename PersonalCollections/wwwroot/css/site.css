@@ -66,3 +66,10 @@ input[type=number] {
 }
 
 
+.last-col {
+    text-align: right;
+}
+
+.t-nowrap {
+    white-space: nowrap;
+}

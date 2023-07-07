@@ -58,7 +58,7 @@ namespace PersonalCollections.Controllers
             var collection = await _collectionService.GetByIdAsync(request.CollectionId);
 
             ViewData["page"] = request.Page;
-            ViewData["total"] = (int)Math.Ceiling((double)(await _itemService.CountItemsAsync(request.CollectionId, cancellationToken)) / request.PageSize);
+            ViewData["total"] = (int)Math.Ceiling((double)(await _itemService.CountItemsAsync(request.CollectionId, request.Filter, cancellationToken)) / request.PageSize);
 
             return PartialView("_ItemsPartial", new GetItemsResponse
             {

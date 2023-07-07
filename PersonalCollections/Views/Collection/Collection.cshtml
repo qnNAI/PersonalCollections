@@ -73,11 +73,15 @@
     </a>
 </div>
 
-<div class="mb-5  table-responsive">
+<div class="mb-5 table-responsive">
 
     <table class="table table-hover table-striped" id="itemsTable">
         <thead class="table-dark">
             <tr>
+                @if(User.Identity?.IsAuthenticated ?? false)
+                {
+                    <th></th>
+                }
                 <th>Name</th>
                 @foreach(var field in Model.Fields
                     .Where(x => x.FieldType.Name == collectionTypes.String || x.FieldType.Name == collectionTypes.Date)
@@ -91,7 +95,7 @@
         </tbody>
     </table>
 
-    <div class="d-flex flex-row justify-content-center w-100 mb-5">
+    <div class="d-flex flex-row justify-content-center w-100">
         <div class="spinner-border text-success" role="status" id="loader">
             <span class="visually-hidden">Loading...</span>
         </div>
@@ -100,7 +104,7 @@
     <nav>
         <ul class="pagination">
             <li class="page-item" id="prevBtn">
-                <a class="page-link" onclick="loadPrevPage('@Url.Action("Items")')" href="#">Previous</a>
+                <a class="page-link" onclick="loadPrevItemsPage('@Url.Action("Items", "Item")', '@Model.Id')" href="#">Previous</a>
             </li>
             <li class="page-item">
                 <a class="page-link">
@@ -108,7 +112,7 @@
                 </a>
             </li>
             <li class="page-item" id="nextBtn">
-                <a class="page-link" onclick="loadNextPage('@Url.Action("Items")')" href="#">Next</a>
+                <a class="page-link" onclick="loadNextItemsPage('@Url.Action("Items", "Item")', '@Model.Id')" href="#">Next</a>
             </li>
         </ul>
     </nav>

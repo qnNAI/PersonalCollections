@@ -13,6 +13,6 @@ namespace Application.Common.Contracts.Services
         Task<IEnumerable<TagDto>> GetTagsByPrefixAsync(string prefix);
         Task<AddItemResponse> AddItemAsync(AddItemRequest request);
         Task<IEnumerable<ItemDto>> GetItemsAsync(GetItemsRequest request, CancellationToken cancellationToken);
-        Task<int> CountItemsAsync(string collectionId, CancellationToken cancellationToken = default);
+        Task<int> CountItemsAsync(string collectionId, string filter, CancellationToken cancellationToken);
     }
 }

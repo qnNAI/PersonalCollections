@@ -119,8 +119,15 @@ namespace Application.Services
             return items;
         }
 
-        public Task<int> CountItemsAsync(string collectionId, CancellationToken cancellationToken = default) {
-            return _context.Items.Where(x => x.CollectionId == collectionId).CountAsync(cancellationToken);
+        public Task<int> CountItemsAsync(string collectionId, string filter, CancellationToken cancellationToken) {
+            var itemsQuery = _context.Items.Where(x => x.CollectionId == collectionId);
+
+            if(!string.IsNullOrEmpty(filter))
+            {
+                itemsQuery = itemsQuery.Where(x => EF.Functions.Contains(x.Name, filter));
+            }
+
+            return itemsQuery.CountAsync(cancellationToken);
         }
     }
 }

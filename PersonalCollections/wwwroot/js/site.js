@@ -281,3 +281,13 @@ function loadItems(url, collectionId, page = 1) {
     });
 
 }
+
+function loadPrevItemsPage(url, collectionId) {
+    let currentPage = document.getElementById('currentPageInput').value;
+    loadItems(url, collectionId, +currentPage - 1);
+}
+
+function loadNextItemsPage(url, collectionId) {
+    let currentPage = document.getElementById('currentPageInput').value;
+    loadItems(url, collectionId, +currentPage + 1);
+}
