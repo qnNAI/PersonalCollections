@@ -11,10 +11,6 @@ namespace PersonalCollections.Filters
         {
             var controller = context.Controller as Controller;
             var userId = context.HttpContext.Request.Query["userId"].ToString();
-            if(string.IsNullOrEmpty(userId))
-            {
-                userId = controller.TempData.Peek("UserId")?.ToString();
-            }
 
             if (userId is null)
             {

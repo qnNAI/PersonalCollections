@@ -1,6 +1,6 @@
 ﻿@using Application.Models.Collection;
 @using Markdig;
-@model IEnumerable<CollectionDto>;
+@model CollectionsManagementResponse;
 
 @{
     ViewData["Title"] = "Collections management";
@@ -18,9 +18,9 @@
 
 <h3 class="mt-5">Collections management</h3>
 
-<h5 class="mt-5">Your collections</h5>
+<h5 class="mt-5">@Model.Author.UserName collections</h5>
 <div class="mt-4">
-    <a class="btn btn-success" href="@Url.Action("AddCollection")">
+    <a class="btn btn-success" href="@Url.Action("AddCollection", "Collection", new { userId = Model.Author.Id })">
         New
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle ms-1 mb-1" viewBox="0 0 16 16">
             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
@@ -29,7 +29,7 @@
     </a>
     
     <div class="mt-4 mb-5">
-        @foreach(var collection in Model)
+        @foreach(var collection in Model.Collections)
         {
             <div class="card w-75 mt-4" id="@collection.Id">
                 <div class="card-header alert alert-primary d-flex justify-content-between align-items-center">

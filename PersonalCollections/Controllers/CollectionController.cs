@@ -1,7 +1,10 @@
 ﻿using System.Security.Claims;
 using Application.Common.Contracts.Services;
 using Application.Models.Collection;
+using Domain.Entities.Identity;
+using Mapster;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PersonalCollections.Filters;
 using PersonalCollections.Models;
@@ -12,24 +15,25 @@ namespace PersonalCollections.Controllers
     public class CollectionController : Controller
     {
         private readonly ICollectionService _collectionService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public CollectionController(ICollectionService collectionService)
+        public CollectionController(ICollectionService collectionService, UserManager<ApplicationUser> userManager)
         {
             _collectionService = collectionService;
+            _userManager = userManager;
         }
 
         [HttpGet]
         [Authorize]
         [PersonalInfoFilter]
-        public IActionResult AddCollection()
+        public IActionResult AddCollection([FromQuery] string userId)
         {
-            return View();
+            return View(new AddCollectionRequest { UserId = userId });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        [PersonalInfoFilter]
         public async Task<IActionResult> AddCollection(AddCollectionRequest request)
         {
             if (!ModelState.IsValid)
@@ -37,12 +41,14 @@ namespace PersonalCollections.Controllers
                 return View(request);
             }
 
-            var userId = TempData.Peek("UserId")?.ToString();
-            request.UserId = userId;
+            if (!User.IsInRole("Admin") && request.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+            {
+                return Forbid();
+            }
 
             await _collectionService.AddAsync(request);
 
-            return RedirectToAction(nameof(CollectionsManagement), new { userId });
+            return RedirectToAction(nameof(CollectionsManagement), new { request.UserId });
         }
 
         [HttpPost]
@@ -59,9 +65,15 @@ namespace PersonalCollections.Controllers
         [PersonalInfoFilter]
         public async Task<IActionResult> CollectionsManagement(string userId)
         {
-            TempData["UserId"] = userId;
             var collections = await _collectionService.GetCollectionsAsync(userId);
-            return View(collections);
+            var author = (await _userManager.FindByIdAsync(userId)).Adapt<AuthorDto>();
+
+            var response = new CollectionsManagementResponse
+            {
+                Author = author,
+                Collections = collections
+            };
+            return View(response);
         }
 
         [HttpGet]
