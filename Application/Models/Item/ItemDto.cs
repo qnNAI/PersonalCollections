@@ -9,6 +9,7 @@ namespace Application.Models.Item {
 
     public class ItemDto {
 
+        public string Id { get; set; } = null!;
         public string Name { get; set; } = null!;
         public string CollectionId { get; set; } = null!;
 

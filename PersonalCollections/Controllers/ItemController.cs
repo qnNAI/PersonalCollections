@@ -1,7 +1,10 @@
-﻿using Application.Common.Contracts.Services;
+﻿using System.Security.Claims;
+using Application.Common.Contracts.Services;
 using Application.Models.Item;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using PersonalCollections.Models;
 
 namespace PersonalCollections.Controllers
 {
@@ -16,7 +19,13 @@ namespace PersonalCollections.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> AddItem(string collectionId) {
+            if (await _ValidateAuthorAsync(collectionId))
+            {
+                return Forbid();
+            }
+
             var fields = await _itemService.GetItemFieldsAsync(collectionId);
             var request = new AddItemRequest {
                 CollectionId = collectionId,
@@ -27,9 +36,15 @@ namespace PersonalCollections.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> AddItem(AddItemRequest request) {
             if(!ModelState.IsValid) {
                 return View(request);
+            }
+
+            if(await _ValidateAuthorAsync(request.CollectionId))
+            {
+                return Forbid();
             }
 
             var response = await _itemService.AddItemAsync(request);
@@ -65,6 +80,40 @@ namespace PersonalCollections.Controllers
                 UserId = collection.UserId,
                 Items = items
             });
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> RemoveItem(string itemId)
+        {
+            var item = await _itemService.GetByIdAsync(itemId);
+
+            if (item is null)
+            {
+                return View("Error", new ErrorViewModel
+                {
+                    Message = "Item not found!"
+                });
+            }
+
+            if(await _ValidateAuthorAsync(item.CollectionId))
+            {
+                return Forbid();
+            }
+
+            var result = await _itemService.RemoveAsync(itemId);
+            return result.Succeeded ? Ok() : BadRequest();
+        }
+
+        private async Task<bool> _ValidateAuthorAsync(string collectionId)
+        {
+            var collection = await _collectionService.GetByIdAsync(collectionId);
+            if (collection is null)
+            {
+                return false;
+            }
+
+            return !User.IsInRole("Admin") && User.FindFirstValue(ClaimTypes.NameIdentifier) != collection.UserId;
         }
     }
 }

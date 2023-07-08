@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Application.Models.Collection;
 using Application.Models.Item;
 
 namespace Application.Common.Contracts.Services
@@ -14,5 +15,7 @@ namespace Application.Common.Contracts.Services
         Task<AddItemResponse> AddItemAsync(AddItemRequest request);
         Task<IEnumerable<ItemDto>> GetItemsAsync(GetItemsRequest request, CancellationToken cancellationToken);
         Task<int> CountItemsAsync(string collectionId, string filter, CancellationToken cancellationToken);
+        Task<RemoveItemResponse> RemoveAsync(string itemId);
+        Task<ItemDto?> GetByIdAsync(string itemId);
     }
 }

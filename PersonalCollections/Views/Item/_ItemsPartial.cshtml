@@ -5,7 +5,7 @@
 @inject CollectionTypes collectionTypes;
 
 @foreach(var item in Model.Items) {
-    <tr>
+    <tr id="@item.Id">
         @if(User.Identity?.IsAuthenticated ?? false)
         {
             <td>
@@ -24,7 +24,7 @@
             .Where(x => x.CollectionField.FieldType.Name == collectionTypes.String || x.CollectionField.FieldType.Name == collectionTypes.Date)
             .OrderBy(x => x.CollectionField.Order))
         {
-            if (field.CollectionField.FieldType.Name == collectionTypes.Date)
+            if (field.CollectionField.FieldType.Name == collectionTypes.Date && !string.IsNullOrEmpty(field.Value))
             {
                 <td>
                     <input type="datetime-local" readonly class="form-control-plaintext" value="@field.Value">
@@ -51,7 +51,7 @@
                             <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
                         </svg>
                     </button>
-                    <button type="button" class="btn btn-danger btn-sm">
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeItem('@Url.Action("RemoveItem", "Item")', '@item.Id')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill mb-1" viewBox="0 0 16 16">
                             <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z" />
                         </svg>
@@ -70,6 +70,17 @@
         </td>
     </tr>
 }
+
+<div class="toast-container position-fixed bottom-0 start-0 p-3">
+    <div id="liveToast" class="toast text-bg-danger" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">Warning</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastBody">
+        </div>
+    </div>
+</div>
 
 <input type="hidden" id="currentPageInput" value="@ViewData["page"]" />
 <input type="hidden" id="totalPagesInput" value="@ViewData["total"]" />

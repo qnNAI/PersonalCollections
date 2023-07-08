@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.Common.Contracts.Contexts;
 using Application.Common.Contracts.Services;
+using Application.Models.Collection;
 using Application.Models.Item;
 using Domain.Entities.Items;
 using Mapster;
@@ -128,6 +129,27 @@ namespace Application.Services
             }
 
             return itemsQuery.CountAsync(cancellationToken);
+        }
+
+        public async Task<RemoveItemResponse> RemoveAsync(string itemId)
+        {
+            var item = await _context.Items.FindAsync(itemId);
+            if(item is null)
+            {
+                return new RemoveItemResponse { Succeeded = false };
+            }
+
+            _context.Items.Remove(item);
+            await _context.SaveChangesAsync();
+
+            return new RemoveItemResponse { Succeeded = true };
+        }
+
+        public async Task<ItemDto?> GetByIdAsync(string itemId)
+        {
+            var item = await _context.Items.FirstOrDefaultAsync(x => x.Id == itemId);
+
+            return item?.Adapt<ItemDto>();
         }
     }
 }

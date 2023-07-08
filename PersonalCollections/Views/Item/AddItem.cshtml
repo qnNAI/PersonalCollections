@@ -25,16 +25,16 @@
                     @switch (field.CollectionField.FieldType.Name)
                     {
                         case "DATETIME":
-                            <input asp-for="Fields[fieldCounter].Value" required type="datetime-local" class="form-control" />
+                            <input asp-for="Fields[fieldCounter].Value" type="datetime-local" class="form-control" />
                             break;
                         case "INTEGER":
-                            <input asp-for="Fields[fieldCounter].Value" required type="number" oninput="this.value = Math.round(this.value);" class="form-control" placeholder="123">
+                            <input asp-for="Fields[fieldCounter].Value" type="number" oninput="this.value = Math.round(this.value);" class="form-control" placeholder="123">
                             break;
                         case "STRING":
-                            <input asp-for="Fields[fieldCounter].Value" required class="form-control" type="text" />
+                            <input asp-for="Fields[fieldCounter].Value" class="form-control" type="text" />
                             break;
                         case "TEXT":
-                            <textarea asp-for="Fields[fieldCounter].Value" required class="form-control" rows="5"></textarea>
+                            <textarea asp-for="Fields[fieldCounter].Value" class="form-control" rows="5"></textarea>
                             break;
                         case "BOOLEAN":
                             <input asp-for="Fields[fieldCounter].Value" type="checkbox" class="ms-2" />

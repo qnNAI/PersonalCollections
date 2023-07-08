@@ -229,6 +229,24 @@ function removeCollection(url, id) {
 
 }
 
+function removeItem(url, id) {
+    $.ajax({
+        url: `${url}`,
+        type: 'POST',
+        cache: false,
+        async: true,
+        dataType: 'html',
+        data: {
+            "itemId": id
+        }
+    }).done(() => {
+        document.getElementById(id).remove();
+    }).fail(() => {
+        showWarning('Failed to remove item!');
+    });
+
+}
+
 function showWarning(message) {
     const toastLive = document.getElementById('liveToast')
 

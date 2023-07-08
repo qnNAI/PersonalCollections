@@ -25,7 +25,7 @@ namespace PersonalCollections.Controllers
 
         [HttpGet]
         [Authorize]
-        [PersonalInfoFilter]
+        [AuthorFilter]
         public IActionResult AddCollection([FromQuery] string userId)
         {
             return View(new AddCollectionRequest { UserId = userId });
@@ -53,7 +53,7 @@ namespace PersonalCollections.Controllers
 
         [HttpPost]
         [Authorize]
-        [PersonalInfoFilter]
+        [AuthorFilter]
         public async Task<IActionResult> RemoveCollection(string collectionId)
         {
             var result = await _collectionService.RemoveAsync(collectionId);
@@ -62,7 +62,7 @@ namespace PersonalCollections.Controllers
 
         [HttpGet]
         [Authorize]
-        [PersonalInfoFilter]
+        [AuthorFilter]
         public async Task<IActionResult> CollectionsManagement(string userId)
         {
             var collections = await _collectionService.GetCollectionsAsync(userId);

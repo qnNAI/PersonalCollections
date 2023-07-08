@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PersonalCollections.Filters
 {
-    public class PersonalInfoFilterAttribute : ActionFilterAttribute
+    public class AuthorFilterAttribute : ActionFilterAttribute
     {
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
