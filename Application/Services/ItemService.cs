@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -50,10 +51,8 @@ namespace Application.Services
                     }
                 };
             }
-            
 
             item.Id = Guid.NewGuid().ToString();
-
             await _PrepareTagsAsync(item);
 
             _context.Items.Add(item);
@@ -62,26 +61,24 @@ namespace Application.Services
             return new AddItemResponse { Succeeded = true };
         }
 
-        private async Task _PrepareTagsAsync(Item item)
+        public async Task UpdateItemAsync(ItemDto request)
         {
-            var tagNames = item.Tags.Select(x => x.Name);
-            var existingTags = await _context.Tags
-                .Where(x => tagNames.Contains(x.Name))
-                .ToDictionaryAsync(x => x.Name);
+            var existing = await _context.Items.AsNoTracking()
+                .Include(x => x.ItemTags)
+                .Include(x => x.Tags)
+                .FirstAsync(x => x.Id == request.Id);
+            var item = request.Adapt<Item>();
+            await _PrepareTagsAsync(item);
 
-            item.Tags = item.Tags.Select(x =>
-            {
-                if(existingTags.ContainsKey(x.Name))
-                {
-                    return existingTags[x.Name];
-                }
-                else
-                {
-                    x.Id = Guid.NewGuid().ToString();
-                    return x;
-                }
-            })
-            .ToList();
+            var tagsToRemove = existing.ItemTags.Where(x => !item.ItemTags.Any(it => it.TagId == x.TagId)).ToList();
+
+            _context.Tags.AddRange(item.Tags);
+            _context.Items.Update(item);
+            await _context.SaveChangesAsync();
+
+            _context.Entry(item).State = EntityState.Detached;
+            _context.ItemTags.RemoveRange(tagsToRemove);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<TagDto>> GetTagsByPrefixAsync(string prefix)
@@ -96,7 +93,7 @@ namespace Application.Services
         }
 
         public async Task<IEnumerable<ItemDto>> GetItemsAsync(GetItemsRequest request, CancellationToken cancellationToken) {
-            var itemsQuery = _context.Items.Where(x => x.CollectionId == request.CollectionId);
+            var itemsQuery = _context.Items.AsNoTracking().Where(x => x.CollectionId == request.CollectionId);
 
             if (!string.IsNullOrEmpty(request.Filter)) {
                 itemsQuery = itemsQuery.Where(x => EF.Functions.Contains(x.Name, request.Filter));
@@ -147,9 +144,58 @@ namespace Application.Services
 
         public async Task<ItemDto?> GetByIdAsync(string itemId)
         {
-            var item = await _context.Items.FirstOrDefaultAsync(x => x.Id == itemId);
+            var item = await _context.Items.AsNoTracking()
+                .Where(x => x.Id == itemId)
+                .Include(x => x.Fields)
+                    .ThenInclude(x => x.CollectionField)
+                        .ThenInclude(x => x.FieldType)
+                .Include(x => x.Tags)
+                .FirstOrDefaultAsync();
 
             return item?.Adapt<ItemDto>();
         }
+
+        private async Task _PrepareTagsAsync(Item item)
+        {
+            var tagNames = item.Tags.Select(x => x.Name);
+            var existingTags = await _context.Tags.AsNoTracking()
+                .Where(x => tagNames.Contains(x.Name))
+                .ToDictionaryAsync(x => x.Name);
+            var newTags = new List<Tag>();
+
+            foreach(var tag in item.Tags)
+            {
+                if(existingTags.ContainsKey(tag.Name))
+                {
+                    item.ItemTags.Add(new ItemTag
+                    {
+                        ItemId = item.Id,
+                        TagId = existingTags[tag.Name].Id
+                    });
+                }
+                else
+                {
+                    tag.Id = Guid.NewGuid().ToString();
+                    newTags.Add(tag);
+                }
+            }
+            item.Tags = newTags;
+        }
+
+        private class TagComparer : IEqualityComparer<Tag>
+        {
+            public bool Equals(Tag? x, Tag? y)
+            {
+                if (x == y) return true;
+                if (x == null || y == null) return false;
+                return x.Id == y.Id;
+            }
+
+            public int GetHashCode([DisallowNull] Tag tag)
+            {
+                return tag.Id.GetHashCode();
+            }
+        }
+
     }
 }

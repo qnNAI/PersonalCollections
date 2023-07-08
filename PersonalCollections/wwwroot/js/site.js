@@ -255,9 +255,9 @@ function showWarning(message) {
     toastBootstrap.show()
 }
 
-function setTags() {
+function setTags(formId) {
     let tags = document.getElementsByClassName('tag');
-    let form = document.getElementById('add-item-form');
+    let form = document.getElementById(formId);
     let counter = 0;
     for (let tag of tags) {
         let tagInput = document.createElement('input');

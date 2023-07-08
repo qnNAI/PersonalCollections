@@ -86,23 +86,41 @@ namespace PersonalCollections.Controllers
         [Authorize]
         public async Task<IActionResult> RemoveItem(string itemId)
         {
-            var item = await _itemService.GetByIdAsync(itemId);
-
-            if (item is null)
+            var validateResult = await _ValidateAuthorByItemIdAsync(itemId);
+            if(validateResult.ActionResult is not null)
             {
-                return View("Error", new ErrorViewModel
-                {
-                    Message = "Item not found!"
-                });
-            }
-
-            if(await _ValidateAuthorAsync(item.CollectionId))
-            {
-                return Forbid();
+                return validateResult.ActionResult;
             }
 
             var result = await _itemService.RemoveAsync(itemId);
             return result.Succeeded ? Ok() : BadRequest();
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> EditItem(string itemId)
+        {
+            var validateResult = await _ValidateAuthorByItemIdAsync(itemId);
+            if(validateResult.ActionResult is not null)
+            {
+                return validateResult.ActionResult;
+            }
+
+            return View(validateResult.Item);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> EditItem(ItemDto request)
+        {
+            var validateResult = await _ValidateAuthorByItemIdAsync(request.Id);
+            if (validateResult.ActionResult is not null)
+            {
+                return validateResult.ActionResult;
+            }
+
+            await _itemService.UpdateItemAsync(request);
+            return RedirectToAction("Collection", "Collection", new { collectionId = request.CollectionId });
         }
 
         private async Task<bool> _ValidateAuthorAsync(string collectionId)
@@ -114,6 +132,37 @@ namespace PersonalCollections.Controllers
             }
 
             return !User.IsInRole("Admin") && User.FindFirstValue(ClaimTypes.NameIdentifier) != collection.UserId;
+        }
+
+        private async Task<ValidateAuthorResult> _ValidateAuthorByItemIdAsync(string itemId)
+        {
+            var item = await _itemService.GetByIdAsync(itemId);
+
+            if(item is null)
+            {
+                return new ValidateAuthorResult { 
+                    ActionResult = View("Error", new ErrorViewModel { Message = "Item not found!" }) 
+                };
+            }
+
+            if(await _ValidateAuthorAsync(item.CollectionId))
+            {
+                return new ValidateAuthorResult
+                {
+                    ActionResult = Forbid()
+                };
+            }
+
+            return new ValidateAuthorResult
+            {
+                Item = item
+            };
+        }
+
+        private class ValidateAuthorResult
+        {
+            public IActionResult? ActionResult { get; set; }
+            public ItemDto? Item { get; set; }
         }
     }
 }

@@ -16,6 +16,8 @@ namespace Domain.Entities.Items {
         public Collection Collection { get; set; } = null!;
 
         public ICollection<Tag> Tags { get; set; } = new List<Tag>();
+        public ICollection<ItemTag> ItemTags { get; set; } = new List<ItemTag>();
+
         public ICollection<ItemField> Fields { get; set; } = new List<ItemField>();
     }
 }
