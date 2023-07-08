@@ -17,7 +17,7 @@ namespace Infrastructure.Persistence.Configurations {
             builder
                 .HasKey(e => new { e.CollectionFieldId, e.ItemId });
 
-            builder.Property(e => e.Value).HasDefaultValue(string.Empty).HasMaxLength(450);
+            builder.Property(e => e.Value).IsRequired(false).HasMaxLength(450);
 
             builder
                 .HasOne(e => e.Item)

@@ -5,6 +5,7 @@ using Domain.Entities.Items;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +33,7 @@ namespace Infrastructure.Persistence.Contexts
         public DbSet<ItemField> ItemFields { get; set; }
         public DbSet<CollectionFieldType> CollectionFieldTypes { get; set; }
         public DbSet<Tag> Tags { get; set; }
+        public DbSet<ItemTag> ItemTags { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

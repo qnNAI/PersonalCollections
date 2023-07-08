@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Domain.Entities.Identity;
 using Domain.Entities.Items;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Application.Common.Contracts.Contexts
 {
@@ -21,7 +22,9 @@ namespace Application.Common.Contracts.Contexts
         DbSet<ItemField> ItemFields { get; set; }
         DbSet<CollectionFieldType> CollectionFieldTypes { get; set; }
         DbSet<Tag> Tags { get; set; }
+        DbSet<ItemTag> ItemTags { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+        EntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class;
     }
 }

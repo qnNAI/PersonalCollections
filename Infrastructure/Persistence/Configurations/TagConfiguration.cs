@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistence.Configurations {
 
-
     public class TagConfiguration : IEntityTypeConfiguration<Tag> {
 
 
@@ -20,9 +19,14 @@ namespace Infrastructure.Persistence.Configurations {
             builder
                 .HasMany(e => e.Items)
                 .WithMany(e => e.Tags)
-                .UsingEntity(
-                    l => l.HasOne(typeof(Item)).WithMany().OnDelete(DeleteBehavior.Cascade),
-                    r => r.HasOne(typeof(Tag)).WithMany().OnDelete(DeleteBehavior.Restrict));
+                .UsingEntity<ItemTag>(
+                    r => r.HasOne(x => x.Item).WithMany(x => x.ItemTags).OnDelete(DeleteBehavior.Cascade),
+                    l => l.HasOne(x => x.Tag).WithMany(x => x.ItemTags).OnDelete(DeleteBehavior.Restrict),
+                    j => 
+                    {
+                        j.HasKey(e => new { e.ItemId, e.TagId });
+                        j.ToTable("ItemTag");
+                    });
         }
     }
 }
