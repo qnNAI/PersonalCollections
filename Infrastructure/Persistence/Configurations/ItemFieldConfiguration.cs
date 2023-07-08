@@ -17,19 +17,12 @@ namespace Infrastructure.Persistence.Configurations {
             builder
                 .HasKey(e => new { e.CollectionFieldId, e.ItemId });
 
-            builder.Property(e => e.Value).HasMaxLength(450);
-
-            builder
-                .HasOne(e => e.CollectionField)
-                .WithMany(e => e.ItemFields)
-                .HasForeignKey(e => e.CollectionFieldId)
-                .IsRequired();
+            builder.Property(e => e.Value).HasDefaultValue(string.Empty).HasMaxLength(450);
 
             builder
                 .HasOne(e => e.Item)
                 .WithMany(e => e.Fields)
                 .HasForeignKey(e => e.ItemId)
-                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
         }
     }
