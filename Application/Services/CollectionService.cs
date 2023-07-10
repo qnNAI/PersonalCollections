@@ -3,6 +3,7 @@ using Application.Common.Contracts.Services;
 using Application.Models.Collection;
 using Domain.Entities.Items;
 using Mapster;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services
@@ -26,8 +27,7 @@ namespace Application.Services
 
             if (request.Image is not null)
             {
-                var imageUrl = await _cloudStorageService.UploadAsync(request.Image, Guid.NewGuid().ToString());
-                collection.ImageUrl = imageUrl;
+                await UploadImageAsync(request.Image, collection);
             }
 
             var fields = request.Fields.Select(x => new CollectionField
@@ -46,11 +46,11 @@ namespace Application.Services
 
         public async Task<EditCollectionResponse> UpdateAsync(EditCollectionRequest request)
         {
-            var collection = await _context.Collections.AsNoTracking()
+            var existing = await _context.Collections.AsNoTracking()
                 .Include(x => x.Fields)
                 .FirstOrDefaultAsync(x => x.Id == request.Id);
 
-            if (collection is null || collection.UserId != request.UserId)
+            if(existing is null || existing.UserId != request.UserId)
             {
                 return new EditCollectionResponse
                 {
@@ -70,13 +70,25 @@ namespace Application.Services
                     return x;
                 })
                 .ToList();
+
             var collectionToUpdate = request.Adapt<Collection>();
-            collectionToUpdate.CreationDate = collection.CreationDate;
+            await UpdateCollectionAsync(request, existing, collectionToUpdate);
+
+            return new EditCollectionResponse { Succeeded = true };
+        }
+
+        private async Task UpdateCollectionAsync(EditCollectionRequest request, Collection? existing, Collection collectionToUpdate)
+        {
+            collectionToUpdate.CreationDate = existing.CreationDate;
 
             if(request.Image is not null)
             {
-                var imageUrl = await _cloudStorageService.UploadAsync(request.Image, Guid.NewGuid().ToString());
-                collectionToUpdate.ImageUrl = imageUrl;
+                if(!string.IsNullOrEmpty(existing.ImageName))
+                {
+                    await _cloudStorageService.DeleteAsync(existing.ImageName);
+                }
+
+                await UploadImageAsync(request.Image, collectionToUpdate);
             }
 
             foreach(var field in collectionToUpdate.Fields)
@@ -87,8 +99,14 @@ namespace Application.Services
             await _context.CollectionFields.AddRangeAsync(collectionToUpdate.Fields);
             _context.Collections.Update(collectionToUpdate);
             await _context.SaveChangesAsync();
+        }
 
-            return new EditCollectionResponse { Succeeded = true };
+        private async Task UploadImageAsync(IFormFile image, Collection collection)
+        {
+            var imageName = Guid.NewGuid().ToString();
+            var imageUrl = await _cloudStorageService.UploadAsync(image, imageName);
+            collection.ImageUrl = imageUrl;
+            collection.ImageName = imageName;
         }
 
         public async Task<RemoveCollectionResponse> RemoveAsync(string collectionId)
@@ -97,6 +115,11 @@ namespace Application.Services
             if (collection is null)
             {
                 return new RemoveCollectionResponse { Succeeded = false };
+            }
+
+            if(!string.IsNullOrEmpty(collection.ImageName))
+            {
+                await _cloudStorageService.DeleteAsync(collection.ImageName);
             }
 
             _context.Collections.Remove(collection);
