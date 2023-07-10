@@ -139,6 +139,23 @@ function addField() {
     container.append(div);
 }
 
+function addFullField() {
+    let container = document.getElementById('fields');
+    let select = document.getElementById('type-select');
+    let div = document.createElement('div');
+    div.id = `field-container-${counter}`;
+    div.classList.add('input-group');
+    div.classList.add('mb-3');
+    div.innerHTML = `
+        <input id="field-name-${counter}" type="text" name="Fields[index].Name" class="form-control" placeholder="Field name" required>
+        <span class="input-group-text">${select.options[select.selectedIndex].text}</span>
+        <input id="field-type-${counter}" type="hidden" value=${select.value} name="Fields[index].FieldType.Id" />
+        <button type="button" class="btn btn-danger" onclick="removeField('field-container-${counter}')">X</button>
+    `;
+    counter++;
+    container.append(div);
+}
+
 function removeField(id) {
     let field = document.getElementById(id);
     field.remove();
@@ -159,7 +176,22 @@ function arrangeTypes() {
 
         index++;
     }
+}
 
+function arrangeTypesStartWith(index) {
+    let fields = document.querySelectorAll('[id^="field-container"]');
+
+    for (let field of fields) {
+        let postfix = field.id.substring(16);
+
+        let fieldName = document.getElementById(`field-name-${postfix}`);
+        fieldName.name = fieldName.name.replace('index', index);
+
+        let fieldType = document.getElementById(`field-type-${postfix}`)
+        fieldType.name = fieldType.name.replace('index', index);
+
+        index++;
+    }
 }
 
 function setupFileInput() {

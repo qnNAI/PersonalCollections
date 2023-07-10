@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.Models.Collection;
 using Application.Models.Identity;
+using Application.Models.Item;
 using Domain.Entities.Identity;
 using Domain.Entities.Items;
 using Mapster;
@@ -29,6 +30,15 @@ namespace Application.Common.Mappings {
             TypeAdapterConfig<Collection, CollectionDto>
                 .NewConfig()
                 .Map(dest => dest.Author, src => src.User);
+
+            TypeAdapterConfig<CollectionDto, EditCollectionRequest>
+                .NewConfig()
+                .Map(dest => dest.CollectionThemeId, src => src.Theme.Id);
+
+            TypeAdapterConfig<CollectionFieldDto, CollectionField>
+                .NewConfig()
+                .Map(dest => dest.CollectionFieldTypeId, src => src.FieldType.Id);
+
         }
     }
 }

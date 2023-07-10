@@ -51,6 +51,57 @@ namespace PersonalCollections.Controllers
             return RedirectToAction(nameof(CollectionsManagement), new { request.UserId });
         }
 
+        [HttpGet]
+        [Authorize]
+        [AuthorFilter]
+        public async Task<IActionResult> EditCollection([FromQuery] string userId, [FromQuery] string collectionId)
+        {
+            var collection = await _collectionService.GetByIdAsync(collectionId);
+            if (collection is null)
+            {
+                return View("Error", new ErrorViewModel { Message = "Collection not found!" });
+            }
+
+            return View(collection.Adapt<EditCollectionRequest>());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> EditCollection(EditCollectionRequest request)
+        {
+            if(!ModelState.IsValid)
+            {
+                var collection = await _collectionService.GetByIdAsync(request.Id);
+                if (collection is null)
+                {
+                    return View("Error", new ErrorViewModel { Message = "Collection not found!" });
+                }
+                return await _EditCollectionFailedResponseAsync(collection, request);
+            }
+
+            if(!User.IsInRole("Admin") && request.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+            {
+                return Forbid();
+            }
+
+            var result = await _collectionService.UpdateAsync(request);
+            if (result.Succeeded)
+            {
+                return RedirectToAction(nameof(CollectionsManagement), new { userId = request.UserId });
+            }
+            else
+            {
+                foreach(var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error);
+                }
+
+                var collection = await _collectionService.GetByIdAsync(request.Id);
+                return await _EditCollectionFailedResponseAsync(collection, request);
+            }
+        }
+
         [HttpPost]
         [Authorize]
         [AuthorFilter]
@@ -84,6 +135,15 @@ namespace PersonalCollections.Controllers
             }
 
             return View(collection);
+        }
+
+        private async Task<IActionResult> _EditCollectionFailedResponseAsync(CollectionDto collection, EditCollectionRequest request)
+        {
+            var response = collection.Adapt<EditCollectionRequest>();
+            response.Name = request.Name;
+            response.Description = request.Description;
+
+            return View(response);
         }
     }
 }
