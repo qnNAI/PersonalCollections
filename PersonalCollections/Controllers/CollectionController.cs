@@ -112,8 +112,6 @@ namespace PersonalCollections.Controllers
         }
 
         [HttpGet]
-        [Authorize]
-        [AuthorFilter]
         public async Task<IActionResult> CollectionsManagement(string userId)
         {
             var collections = await _collectionService.GetCollectionsAsync(userId);
