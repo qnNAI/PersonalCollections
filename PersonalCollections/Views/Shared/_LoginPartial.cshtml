@@ -1,11 +1,12 @@
 ﻿﻿@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims;
 
 <ul class="navbar-nav">
     @if(User.Identity?.IsAuthenticated ?? false) {
         <li class="nav-item">
-            <a class="nav-link" href="#" title="Manage">@User.Identity?.Name</a>
+            <a class="nav-link" href="@Url.Action("CollectionsManagement", "Collection", new { userId = User.FindFirstValue(ClaimTypes.NameIdentifier) })" title="Manage">@User.Identity?.Name</a>
         </li>
-        <li class="nav-item ms-sm-3">
+        <li class="nav-item ms-md-3">
             <form class="form-inline" method="post" asp-controller="Identity" asp-action="Signout">
                 <button type="submit" class="btn btn-outline-success d-flex flex-row align-items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right me-1" viewBox="0 0 16 16">

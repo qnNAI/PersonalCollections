@@ -14,7 +14,6 @@ namespace PersonalCollections.Controllers
 			_logger = logger;
 		}
 
-		//[Authorize]
 		public IActionResult Index()
 		{
 			return View();

@@ -341,3 +341,21 @@ function loadNextItemsPage(url, collectionId) {
     let currentPage = document.getElementById('currentPageInput').value;
     loadItems(url, collectionId, +currentPage + 1);
 }
+
+function setTheme(theme) {
+    localStorage.setItem('theme', theme);
+
+    let html = document.getElementById('html-el');
+    html.setAttribute('data-bs-theme', theme);
+}
+
+function loadTheme() {
+    document.addEventListener('DOMContentLoaded', function () {
+        let theme = localStorage.getItem('theme');
+        if (theme) {
+            setTheme(theme);
+        };
+
+    }, false);
+    
+}
