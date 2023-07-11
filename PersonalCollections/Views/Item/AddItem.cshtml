@@ -1,4 +1,5 @@
-﻿@using Application.Models.Item;
+﻿@using Application.Helpers;
+@using Application.Models.Item;
 @model AddItemRequest;
 
 @{
@@ -24,19 +25,19 @@
                     <label asp-for="Fields[fieldCounter].Value" class="form-label">@field.CollectionField.Name</label>
                     @switch (field.CollectionField.FieldType.Name)
                     {
-                        case "DATETIME":
-                            <input asp-for="Fields[fieldCounter].Value" type="datetime-local" class="form-control" />
+                        case CollectionTypes.DATE:
+                            <input asp-for="Fields[fieldCounter].Value" type="date" class="form-control" />
                             break;
-                        case "INTEGER":
+                        case CollectionTypes.INTEGER_NUMBER:
                             <input asp-for="Fields[fieldCounter].Value" type="number" oninput="this.value = Math.round(this.value);" class="form-control" placeholder="123">
                             break;
-                        case "STRING":
+                        case CollectionTypes.STRING:
                             <input asp-for="Fields[fieldCounter].Value" class="form-control" type="text" />
                             break;
-                        case "TEXT":
+                        case CollectionTypes.TEXT:
                             <textarea asp-for="Fields[fieldCounter].Value" class="form-control" rows="5"></textarea>
                             break;
-                        case "BOOLEAN":
+                        case CollectionTypes.BOOL:
                             <input asp-for="Fields[fieldCounter].Value" type="checkbox" class="ms-2" />
                             break;
                     }

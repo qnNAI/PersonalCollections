@@ -2,7 +2,6 @@
 @using Application.Models.Collection;
 @using Markdig;
 @model CollectionDto
-@inject CollectionTypes collectionTypes;
 
 @{
     ViewData["Title"] = "Collection";
@@ -85,7 +84,7 @@
                 <th>Name</th>
                 <th>Tags</th>
                 @foreach(var field in Model.Fields
-                    .Where(x => x.FieldType.Name == collectionTypes.String || x.FieldType.Name == collectionTypes.Date)
+                    .Where(x => x.FieldType.Name == CollectionTypes.STRING || x.FieldType.Name == CollectionTypes.DATE)
                     .OrderBy(x => x.Order)) {
                     <th>@field.Name</th>
                 }

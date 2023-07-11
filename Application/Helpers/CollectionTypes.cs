@@ -3,23 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Helpers
 {
     public class CollectionTypes
     {
-        public string[] Types { get; } = new[] {
-            "INTEGER",
-            "STRING",
-            "TEXT",
-            "BOOLEAN",
-            "DATETIME"
+        private readonly string[] _types = new[]
+        {
+            INTEGER_NUMBER,
+            STRING,
+            TEXT,
+            BOOL,
+            DATE
         };
 
-        public string IntegerNumber => Types[0];
-        public string String => Types[1];
-        public string Text => Types[2];
-        public string Boolean => Types[3];
-        public string Date => Types[4];
+        public const string INTEGER_NUMBER = "INTEGER";
+        public const string STRING = "STRING";
+        public const string TEXT = "TEXT";
+        public const string BOOL = "BOOLEAN";
+        public const string DATE = "DATE";
+
+        public string[] Types => _types;
     }
 }
