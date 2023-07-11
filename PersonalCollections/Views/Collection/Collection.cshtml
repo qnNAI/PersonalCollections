@@ -83,6 +83,7 @@
                     <th></th>
                 }
                 <th>Name</th>
+                <th>Tags</th>
                 @foreach(var field in Model.Fields
                     .Where(x => x.FieldType.Name == collectionTypes.String || x.FieldType.Name == collectionTypes.Date)
                     .OrderBy(x => x.Order)) {
