@@ -19,30 +19,30 @@
             </div>
             <input asp-for="Id" type="hidden" value="@Model.Id"/>
             <input asp-for="CollectionId" value="@Model.CollectionId" type="hidden" />
-            @foreach(var field in Model.Fields.OrderBy(x => x.CollectionField.Order))
+            @foreach(var field in Model.Fields)
             {
                 <div class="form-group mb-3">
                     <label asp-for="Fields[fieldCounter].Value" class="form-label">@field.CollectionField.Name</label>
                     @switch(field.CollectionField.FieldType.Name)
                     {
                         case "DATETIME":
-                            <input asp-for="Fields[fieldCounter].Value" type="datetime-local" class="form-control" value="@Model.Fields[fieldCounter].Value" />
+                            <input asp-for="Fields[fieldCounter].Value" type="datetime-local" class="form-control" value="@field.Value" />
                             break;
                         case "INTEGER":
-                            <input asp-for="Fields[fieldCounter].Value" type="number" oninput="this.value = Math.round(this.value);" class="form-control" value="@Model.Fields[fieldCounter].Value">
+                            <input asp-for="Fields[fieldCounter].Value" type="number" oninput="this.value = Math.round(this.value);" class="form-control" value="@field.Value">
                             break;
                         case "STRING":
-                            <input asp-for="Fields[fieldCounter].Value" class="form-control" type="text" value="@Model.Fields[fieldCounter].Value" />
+                            <input asp-for="Fields[fieldCounter].Value" class="form-control" type="text" value="@field.Value" />
                             break;
                         case "TEXT":
-                            <textarea asp-for="Fields[fieldCounter].Value" class="form-control" rows="5" value="@Model.Fields[fieldCounter].Value"></textarea>
+                            <textarea asp-for="Fields[fieldCounter].Value" class="form-control" rows="5" value="@field.Value"></textarea>
                             break;
                         case "BOOLEAN":
-                            <input asp-for="Fields[fieldCounter].Value" type="checkbox" class="ms-2" value="@Model.Fields[fieldCounter].Value" />
+                            <input asp-for="Fields[fieldCounter].Value" type="checkbox" class="ms-2" />
                             break;
                     }
                     <span asp-validation-for="Fields[fieldCounter].Value" class="text-danger"></span>
-                    <input asp-for="Fields[fieldCounter].ItemId" type="hidden" value="@Model.Fields[fieldCounter].ItemId" />
+                    <input asp-for="Fields[fieldCounter].ItemId" type="hidden" value="@field.ItemId" />
                     <input asp-for="Fields[fieldCounter].CollectionFieldId" type="hidden" value="@field.CollectionField.Id" />
                     @{
                         fieldCounter++;

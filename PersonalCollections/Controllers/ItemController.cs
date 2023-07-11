@@ -106,6 +106,7 @@ namespace PersonalCollections.Controllers
                 return validateResult.ActionResult;
             }
 
+            validateResult.Item.Fields = validateResult.Item.Fields.OrderBy(x => x.CollectionField.Order).ToList();
             return View(validateResult.Item);
         }
 

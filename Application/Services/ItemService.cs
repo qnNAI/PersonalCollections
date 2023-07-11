@@ -71,7 +71,9 @@ namespace Application.Services
             await _PrepareTagsAsync(item);
 
             var tagsToRemove = existing.ItemTags.Where(x => !item.ItemTags.Any(it => it.TagId == x.TagId)).ToList();
-
+            var tagsToAdd = item.ItemTags.Where(x => !existing.ItemTags.Any(it => it.TagId == x.TagId)).ToList();
+            
+            _context.ItemTags.AddRange(tagsToAdd);
             _context.Tags.AddRange(item.Tags);
             _context.Items.Update(item);
             await _context.SaveChangesAsync();
