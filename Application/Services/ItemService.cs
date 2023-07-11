@@ -99,14 +99,14 @@ namespace Application.Services
             return tags;
         }
 
-        public async Task<IEnumerable<ItemDto>> GetItemsAsync(GetItemsRequest request, CancellationToken cancellationToken) {
+        public async Task<IEnumerable<ItemDto>> GetItemsAsync(GetItemsRequest request, CancellationToken cancellationToken)
+        {
             var itemsQuery = _context.Items.AsNoTracking().Where(x => x.CollectionId == request.CollectionId);
 
-            if (!string.IsNullOrEmpty(request.Filter)) {
-                itemsQuery = itemsQuery.Where(x => EF.Functions.Contains(x.Name, request.Filter));
-            }
+            itemsQuery = ApplyFilters(request.Filter, request.DateEntries, itemsQuery);
 
-            itemsQuery = request.Order switch {
+            itemsQuery = request.Order switch
+            {
                 "asc" => itemsQuery.OrderBy(x => x.Name),
                 "desc" => itemsQuery.OrderByDescending(x => x.Name),
                 _ => itemsQuery.OrderBy(x => x.Name),
@@ -124,13 +124,25 @@ namespace Application.Services
             return items;
         }
 
-        public Task<int> CountItemsAsync(string collectionId, string filter, CancellationToken cancellationToken) {
-            var itemsQuery = _context.Items.Where(x => x.CollectionId == collectionId);
-
+        private static IQueryable<Item> ApplyFilters(string filter, IEnumerable<GetItemsRequest.DateEntry> dateEntries, IQueryable<Item> itemsQuery)
+        {
             if(!string.IsNullOrEmpty(filter))
             {
                 itemsQuery = itemsQuery.Where(x => EF.Functions.Contains(x.Name, filter));
             }
+
+            foreach(var dateEntry in dateEntries)
+            {
+                itemsQuery = itemsQuery.Where(x => x.Fields.First(f => f.CollectionFieldId == dateEntry.Id).Value == dateEntry.Value);
+            }
+
+            return itemsQuery;
+        }
+
+        public Task<int> CountItemsAsync(string collectionId, string filter, IEnumerable<GetItemsRequest.DateEntry> dateEntries, CancellationToken cancellationToken) {
+            var itemsQuery = _context.Items.Where(x => x.CollectionId == collectionId);
+
+            itemsQuery = ApplyFilters(filter, dateEntries, itemsQuery);
 
             return itemsQuery.CountAsync(cancellationToken);
         }

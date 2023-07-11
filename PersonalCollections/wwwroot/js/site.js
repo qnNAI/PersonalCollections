@@ -307,7 +307,22 @@ function setTags(formId) {
 function loadItems(url, collectionId, page = 1) {
     let order = document.getElementById('order-select').value;
     let filter = document.getElementById('filter').value;
+    let dateEntries = collectDateFields();
+    let data = {
+        "page": page,
+        "pageSize": PAGE_SIZE,
+        "order": order,
+        "filter": filter,
+        "collectionId": collectionId
+    }
 
+    let dateCounter = 0;
+    dateEntries.forEach(x => {
+        data[`DateEntries[${dateCounter}].Id`] = x.id;
+        data[`DateEntries[${dateCounter}].Value`] = x.value;
+        dateCounter++;
+    });
+    
     $.ajax({
         beforeSend: () => $('#loader').show(),
         complete: () => $('#loader').hide(),
@@ -316,13 +331,7 @@ function loadItems(url, collectionId, page = 1) {
         cache: false,
         async: true,
         dataType: 'html',
-        data: {
-            "page": page,
-            "pageSize": PAGE_SIZE,
-            "order": order,
-            "filter": filter,
-            "collectionId": collectionId
-        }
+        data: data
     }).done(result => {
         refreshTable(result);
     }).fail(result => {
@@ -330,6 +339,16 @@ function loadItems(url, collectionId, page = 1) {
         window.location.replace(location);
     });
 
+}
+
+function collectDateFields() {
+    let dates = document.querySelectorAll('[id^="date-"]');
+    let dateEntries = [...dates].filter(x => x.value !== "").map(x => ({
+        id: x.id.substring(5),
+        value: x.value
+    }));
+
+    return dateEntries;
 }
 
 function loadPrevItemsPage(url, collectionId) {

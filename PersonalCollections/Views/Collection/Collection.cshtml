@@ -62,7 +62,19 @@
         <button class="btn btn-outline-success" type="button" onclick="loadItems('@Url.Action("Items", "Item")', '@Model.Id', 1)">Search</button>
     </div>
 </div>
-<div class="mb-3">
+
+
+@foreach(var field in Model.Fields.Where(x => x.FieldType.Name == CollectionTypes.DATE))
+{
+    <div class="row mb-3">
+        <label for="date-@field.Id" class="col-form-label col-2 col-lg-1">@field.Name</label>
+        <div class="col-5 col-lg-2">
+            <input type="date" id="date-@field.Id" class="form-control" />
+        </div>
+    </div>
+}
+
+<div class="mt-4 mb-3">
     <a class="btn btn-success" href="@Url.Action("AddItem", "Item", new { collectionId = Model.Id })">
         New
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle ms-1 mb-1" viewBox="0 0 16 16">

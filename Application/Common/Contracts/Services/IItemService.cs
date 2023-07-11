@@ -15,7 +15,7 @@ namespace Application.Common.Contracts.Services
         Task<AddItemResponse> AddItemAsync(AddItemRequest request);
         Task UpdateItemAsync(ItemDto request);
         Task<IEnumerable<ItemDto>> GetItemsAsync(GetItemsRequest request, CancellationToken cancellationToken);
-        Task<int> CountItemsAsync(string collectionId, string filter, CancellationToken cancellationToken);
+        Task<int> CountItemsAsync(string collectionId, string filter, IEnumerable<GetItemsRequest.DateEntry> dateEntries, CancellationToken cancellationToken);
         Task<RemoveItemResponse> RemoveAsync(string itemId);
         Task<ItemDto?> GetByIdAsync(string itemId);
     }

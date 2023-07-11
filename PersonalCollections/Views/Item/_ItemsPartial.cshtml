@@ -12,9 +12,9 @@
             </svg>
         </td>
         <td class="t-nowrap pt-3">@item.Name</td>
-        <td class="pt-3">@string.Join(", ", item.Tags.Select(x => x.Name))</td>
+        <td class="pt-3">@string.Join(", ", item.Tags.OrderBy(x => x.Name).Select(x => x.Name))</td>
         @foreach(var field in item.Fields
-       .Where(x => x.CollectionField.FieldType.Name == CollectionTypes.STRING || x.CollectionField.FieldType.Name == CollectionTypes.DATE)
+            .Where(x => x.CollectionField.FieldType.Name == CollectionTypes.STRING || x.CollectionField.FieldType.Name == CollectionTypes.DATE)
             .OrderBy(x => x.CollectionField.Order))
         {
             if(field.CollectionField.FieldType.Name == CollectionTypes.DATE && !string.IsNullOrEmpty(field.Value))
