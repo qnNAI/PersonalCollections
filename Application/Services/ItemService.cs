@@ -52,8 +52,10 @@ namespace Application.Services
                 };
             }
 
+            NormalizeTags(item);
+
             item.Id = Guid.NewGuid().ToString();
-            await _PrepareTagsAsync(item);
+            await PrepareTagsAsync(item);
 
             _context.Items.Add(item);
             await _context.SaveChangesAsync();
@@ -67,8 +69,11 @@ namespace Application.Services
                 .Include(x => x.ItemTags)
                 .Include(x => x.Tags)
                 .FirstAsync(x => x.Id == request.Id);
+
             var item = request.Adapt<Item>();
-            await _PrepareTagsAsync(item);
+            NormalizeTags(item);
+
+            await PrepareTagsAsync(item);
 
             var tagsToRemove = existing.ItemTags.Where(x => !item.ItemTags.Any(it => it.TagId == x.TagId)).ToList();
             var tagsToAdd = item.ItemTags.Where(x => !existing.ItemTags.Any(it => it.TagId == x.TagId)).ToList();
@@ -157,7 +162,7 @@ namespace Application.Services
             return item?.Adapt<ItemDto>();
         }
 
-        private async Task _PrepareTagsAsync(Item item)
+        private async Task PrepareTagsAsync(Item item)
         {
             var tagNames = item.Tags.Select(x => x.Name);
             var existingTags = await _context.Tags.AsNoTracking()
@@ -182,6 +187,14 @@ namespace Application.Services
                 }
             }
             item.Tags = newTags;
+        }
+
+        private void NormalizeTags(Item item)
+        {
+            foreach(var tag in item.Tags)
+            {
+                tag.Name = tag.Name.ToLower();
+            }
         }
 
         private class TagComparer : IEqualityComparer<Tag>

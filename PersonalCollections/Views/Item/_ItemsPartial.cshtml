@@ -5,14 +5,14 @@
 @inject CollectionTypes collectionTypes;
 
 @foreach(var item in Model.Items) {
-    <tr id="@item.Id">
-        <td>
+    <tr= id="@item.Id">
+        <td class="pt-3">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#b01279" class="bi bi-heart-fill" viewBox="0 0 16 16">
                 <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z" />
             </svg>
         </td>
-        <td class="t-nowrap">@item.Name</td>
-        <td>@string.Join(", ", item.Tags.Select(x => x.Name))</td>
+        <td class="t-nowrap pt-3">@item.Name</td>
+        <td class="pt-3">@string.Join(", ", item.Tags.Select(x => x.Name))</td>
         @foreach(var field in item.Fields
        .Where(x => x.CollectionField.FieldType.Name == CollectionTypes.STRING || x.CollectionField.FieldType.Name == CollectionTypes.DATE)
             .OrderBy(x => x.CollectionField.Order))
@@ -25,10 +25,10 @@
             } 
             else
             {
-                <td class="t-nowrap">@field.Value</td>
+                <td class="t-nowrap pt-3">@field.Value</td>
             }
         }
-        <td class="last-col">
+        <td class="last-col pt-2">
             @if (User.Identity?.IsAuthenticated ?? false && (User.IsInRole("Admin") || User.FindFirstValue(ClaimTypes.NameIdentifier) == Model.UserId))
             {
                 <div class="btn-group" role="group">

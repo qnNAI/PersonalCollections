@@ -17,7 +17,7 @@ namespace Application.Models.Collection
                 var set = new HashSet<string>();
                 foreach(var field in fields)
                 {
-                    if(!set.Add(field.Name))
+                    if(!set.Add(field.Name.ToLower()))
                     {
                         context.AddFailure(new FluentValidation.Results.ValidationFailure
                         {
