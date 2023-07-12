@@ -10,18 +10,22 @@ using Domain.Entities.Identity;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Services.CloudStorage;
 using Infrastructure.Services.Email;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Infrastructure {
     public static class DependencyInjection {
 
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration) {
-			services.AddDbContext<ApplicationDbContext>(options =>
-				options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
-					builder => builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env) {
+			services.AddDbContext<ApplicationDbContext>(options => {
+				var connectionString = env.IsDevelopment() ? configuration.GetConnectionString("DefaultConnection") : configuration["Remote_Connection_String"];
+                options.UseSqlServer(connectionString,
+						builder => builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName));
+            });
 
 			services.AddIdentity<ApplicationUser, IdentityRole>()
 				.AddRoles<IdentityRole>()
