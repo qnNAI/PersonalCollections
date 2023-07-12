@@ -22,25 +22,33 @@
             @foreach(var field in Model.Fields.OrderBy(x => x.CollectionField.Order))
             {
                 <div class="form-group mb-3">
-                    <label asp-for="Fields[fieldCounter].Value" class="form-label">@field.CollectionField.Name</label>
-                    @switch (field.CollectionField.FieldType.Name)
+                    @if(field.CollectionField.FieldType.Name == CollectionTypes.BOOL)
                     {
-                        case CollectionTypes.DATE:
-                            <input asp-for="Fields[fieldCounter].Value" type="date" class="form-control" />
-                            break;
-                        case CollectionTypes.INTEGER_NUMBER:
-                            <input asp-for="Fields[fieldCounter].Value" type="number" oninput="this.value = Math.round(this.value);" class="form-control" placeholder="123">
-                            break;
-                        case CollectionTypes.STRING:
-                            <input asp-for="Fields[fieldCounter].Value" class="form-control" type="text" />
-                            break;
-                        case CollectionTypes.TEXT:
-                            <textarea asp-for="Fields[fieldCounter].Value" class="form-control" rows="5"></textarea>
-                            break;
-                        case CollectionTypes.BOOL:
-                            <input asp-for="Fields[fieldCounter].Value" type="checkbox" class="ms-2" />
-                            break;
+                        <div class="form-check">
+                            <input asp-for="Fields[fieldCounter].Value" type="checkbox" class="form-check-input" />
+                            <label asp-for="Fields[fieldCounter].Value" class=" form-check-label">@field.CollectionField.Name</label>
+                        </div>
+                    } 
+                    else
+                    {
+                        <label asp-for="Fields[fieldCounter].Value" class="form-label">@field.CollectionField.Name</label>
+                        @switch(field.CollectionField.FieldType.Name)
+                        {
+                            case CollectionTypes.DATE:
+                                <input asp-for="Fields[fieldCounter].Value" type="date" class="form-control" />
+                                break;
+                            case CollectionTypes.INTEGER_NUMBER:
+                                <input asp-for="Fields[fieldCounter].Value" type="number" oninput="this.value = Math.round(this.value);" class="form-control" placeholder="123">
+                                break;
+                            case CollectionTypes.STRING:
+                                <input asp-for="Fields[fieldCounter].Value" class="form-control" type="text" />
+                                break;
+                            case CollectionTypes.TEXT:
+                                <textarea asp-for="Fields[fieldCounter].Value" class="form-control" rows="5"></textarea>
+                                break;
+                        }
                     }
+                    
                     <span asp-validation-for="Fields[fieldCounter].Value" class="text-danger"></span>
                     <input asp-for="Fields[fieldCounter].CollectionFieldId" type="hidden" value="@field.CollectionField.Id" />
                     @{ fieldCounter++; } 
@@ -62,7 +70,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         $('#tags-input').tagsinput({
-            tagClass: 'badge text-bg-success',
+            tagClass: 'badge text-bg-success pb-2',
         });
         $('.bootstrap-tagsinput > input').autocomplete({
             source: '/Item/TagAutocomplete',

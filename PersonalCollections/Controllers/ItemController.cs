@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Application.Common.Contracts.Services;
+using Application.Models.Email;
 using Application.Models.Item;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -79,6 +80,24 @@ namespace PersonalCollections.Controllers
             {
                 UserId = collection.UserId,
                 Items = items
+            });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Item(string itemId)
+        {
+            var item = await _itemService.GetByIdAsync(itemId);
+
+            if(item is null)
+            {
+                return View("Error", new ErrorViewModel { Message = "Item not found!" });
+            }
+            var collection = await _collectionService.GetByIdAsync(item.CollectionId);
+
+            return View(new ItemResponse
+            {
+                Collection = collection,
+                Item = item
             });
         }
 

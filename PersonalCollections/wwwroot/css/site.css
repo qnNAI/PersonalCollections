@@ -78,3 +78,7 @@ input[type=number] {
     width: fit-content;
     min-width: 1rem;
 }
+
+.bootstrap-tagsinput {
+    border: 1px solid var(--bs-border-color) !important;
+}
