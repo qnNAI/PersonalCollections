@@ -423,3 +423,20 @@ function toggleLike(url, itemId) {
 
 
 }
+
+function setupItemHub() {
+    hubConnection = new signalR.HubConnectionBuilder()
+        .withUrl("/item")
+        .build();
+    let itemId = document.getElementById('item-id').value;
+
+    setupHubEndpoints();
+    hubConnection.start()
+        .then(() => {
+            hubConnection.invoke("JoinItemGroup", itemId);
+        });
+}
+
+function setupHubEndpoints() {
+
+}

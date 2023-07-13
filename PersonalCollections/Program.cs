@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using PersonalCollections.Middleware;
+using PersonalCollections.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +48,10 @@ builder.Services.Configure<IdentityOptions>(opts => {
 	opts.User.RequireUniqueEmail = true;
 });
 
+builder.Services.AddSignalR(op => {
+    op.EnableDetailedErrors = true;
+});
+
 builder.Services.AddControllersWithViews(o => {
 	o.ModelValidatorProviders.Clear();
 	o.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
@@ -81,5 +86,6 @@ app.UseUserStatusValidation();
 app.MapControllerRoute(
 	name: "default",
 	pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapHub<ItemHub>("/item");
 
 app.Run();

@@ -7,6 +7,9 @@
     ViewData["Title"] = "Item";
 }
 
+
+<input type="hidden" value="@Model.Item.Id" id="item-id" />
+
 <h3 class="mt-5">
     @Model.Item.Name
     @if((User.Identity?.IsAuthenticated ?? false) && (User.IsInRole("Admin") || User.FindFirstValue(ClaimTypes.NameIdentifier) == Model.Collection.UserId))
@@ -95,3 +98,18 @@
         </div>
     </div>
 </div>
+
+
+@section Scripts {
+
+   <script src="~/lib/microsoft-signalr/signalr.min.js"></script>
+
+   <script>
+       let hubConnection;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            setupItemHub();
+
+        }, false);
+   </script>
+}
