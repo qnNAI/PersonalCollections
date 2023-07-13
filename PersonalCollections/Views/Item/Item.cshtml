@@ -74,7 +74,7 @@
 @if(User.Identity?.IsAuthenticated ?? false)
 {
     <div class="d-flex flex-row gap-2 align-items-center mt-4">
-        <button type="button" class="btn border-color-like border-circle" id="like-btn" @(Model.IsLiked ? "data-liked=like" : "") onclick="toggleLike('@Url.Action("Like", "Item")', '@Model.Item.Id')">
+        <button type="button" class="btn border-color-like border-circle" id="like-btn" @(Model.IsLiked ? "data-liked=like" : "") onclick="toggleLike('@Model.Item.Id')">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#b01279" class="bi bi-heart-fill mb-1 mt-1 @(Model.IsLiked ? "" : "d-none") like-icon" viewBox="0 0 16 16">
                 <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z" />
             </svg>

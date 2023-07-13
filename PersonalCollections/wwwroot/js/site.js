@@ -379,7 +379,7 @@ function loadTheme() {
     
 }
 
-function toggleLike(url, itemId) {
+function toggleLike(itemId) {
     let btn = document.getElementById('like-btn');
     let action;
     if (btn.getAttribute('data-liked') === 'like') {
@@ -388,40 +388,8 @@ function toggleLike(url, itemId) {
     else {
         action = 'like';
     }
-    
-    $.ajax({
-        url: `${url}`,
-        type: 'POST',
-        cache: false,
-        async: true,
-        dataType: 'html',
-        data: {
-            itemId: itemId,
-            action: action
-        }
-    }).done(result => {
-        if (btn.getAttribute('data-liked') === 'like') {
-            btn.removeAttribute('data-liked');
-        }
-        else {
-            btn.setAttribute('data-liked', 'like');
-        }
-        document.getElementById('likes').innerText = result;
 
-        let icons = document.getElementsByClassName('like-icon');
-        for (let icon of icons) {
-            if (icon.classList.contains('d-none')) {
-                icon.classList.remove('d-none');
-            }
-            else {
-                icon.classList.add('d-none');
-            }
-        }
-    }).fail(result => {
-        showWarning("Like failed!");
-    });
-
-
+    hubConnection.invoke("Like", itemId, action);
 }
 
 function setupItemHub() {
@@ -438,5 +406,27 @@ function setupItemHub() {
 }
 
 function setupHubEndpoints() {
+    hubConnection.on('LikeSuccess', () => {
+        let btn = document.getElementById('like-btn');
+        if (btn.getAttribute('data-liked') === 'like') {
+            btn.removeAttribute('data-liked');
+        }
+        else {
+            btn.setAttribute('data-liked', 'like');
+        }
 
+        let icons = document.getElementsByClassName('like-icon');
+        for (let icon of icons) {
+            if (icon.classList.contains('d-none')) {
+                icon.classList.remove('d-none');
+            }
+            else {
+                icon.classList.add('d-none');
+            }
+        }
+    });
+
+    hubConnection.on('LikesUpdate', (likes) => {
+        document.getElementById('likes').innerText = likes;
+    });
 }

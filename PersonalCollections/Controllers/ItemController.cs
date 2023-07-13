@@ -153,37 +153,6 @@ namespace PersonalCollections.Controllers
             return RedirectToAction("Collection", "Collection", new { collectionId = request.CollectionId });
         }
 
-        [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> Like(string itemId, string action = "like")
-        {
-            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            bool result = false;
-
-            if (action == "like")
-            {
-                result = await _itemService.AddLikeAsync(userId, itemId);
-            }
-            else if(action == "dislike")
-            {
-                result = await _itemService.RemoveLikeAsync(userId, itemId);
-            }
-            else
-            {
-                return BadRequest();
-            }
-
-            if (result)
-            {
-                var likes = await _itemService.CountLikesAsync(itemId);
-                return Ok(likes);
-            } 
-            else
-            {
-                return BadRequest();
-            }
-        }
-
         private async Task<bool> _ValidateAuthorAsync(string collectionId)
         {
             var collection = await _collectionService.GetByIdAsync(collectionId);
