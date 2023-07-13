@@ -18,5 +18,9 @@ namespace Application.Common.Contracts.Services
         Task<int> CountItemsAsync(string collectionId, string filter, IEnumerable<GetItemsRequest.DateEntry> dateEntries, CancellationToken cancellationToken);
         Task<RemoveItemResponse> RemoveAsync(string itemId);
         Task<ItemDto?> GetByIdAsync(string itemId);
+        Task<bool> AddLikeAsync(string userId, string itemId);
+        Task<bool> RemoveLikeAsync(string userId, string itemId);
+        Task<int> CountLikesAsync(string itemId);
+        Task<bool> IsLikedAsync(string userId, string itemId);
     }
 }

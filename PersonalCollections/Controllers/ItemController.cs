@@ -93,11 +93,21 @@ namespace PersonalCollections.Controllers
                 return View("Error", new ErrorViewModel { Message = "Item not found!" });
             }
             var collection = await _collectionService.GetByIdAsync(item.CollectionId);
+            var likes = await _itemService.CountLikesAsync(itemId);
+            var isLiked = false;
+
+            if (User.Identity?.IsAuthenticated ?? false)
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                isLiked = await _itemService.IsLikedAsync(userId, itemId);
+            }
 
             return View(new ItemResponse
             {
                 Collection = collection,
-                Item = item
+                Item = item,
+                Likes = likes,
+                IsLiked = isLiked
             });
         }
 
@@ -141,6 +151,37 @@ namespace PersonalCollections.Controllers
 
             await _itemService.UpdateItemAsync(request);
             return RedirectToAction("Collection", "Collection", new { collectionId = request.CollectionId });
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Like(string itemId, string action = "like")
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            bool result = false;
+
+            if (action == "like")
+            {
+                result = await _itemService.AddLikeAsync(userId, itemId);
+            }
+            else if(action == "dislike")
+            {
+                result = await _itemService.RemoveLikeAsync(userId, itemId);
+            }
+            else
+            {
+                return BadRequest();
+            }
+
+            if (result)
+            {
+                var likes = await _itemService.CountLikesAsync(itemId);
+                return Ok(likes);
+            } 
+            else
+            {
+                return BadRequest();
+            }
         }
 
         private async Task<bool> _ValidateAuthorAsync(string collectionId)

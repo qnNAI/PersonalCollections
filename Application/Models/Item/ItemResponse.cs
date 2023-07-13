@@ -11,5 +11,7 @@ namespace Application.Models.Item
     {
         public ItemDto Item { get; set; } = null!;
         public CollectionDto Collection { get; set; } = null!;
+        public int Likes { get; set; }
+        public bool IsLiked { get; set; }
     }
 }

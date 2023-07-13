@@ -34,6 +34,8 @@ namespace Infrastructure.Persistence.Contexts
         public DbSet<CollectionFieldType> CollectionFieldTypes { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<ItemTag> ItemTags { get; set; }
+        public DbSet<Like> Likes { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

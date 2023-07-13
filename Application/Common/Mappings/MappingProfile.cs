@@ -39,6 +39,14 @@ namespace Application.Common.Mappings {
                 .NewConfig()
                 .Map(dest => dest.CollectionFieldTypeId, src => src.FieldType.Id);
 
+            TypeAdapterConfig<Item, ItemDto>
+                .NewConfig()
+                .Map(dest => dest.Likes, src => src.Likes.Count);
+
+            TypeAdapterConfig<ItemDto, Item>
+                .NewConfig()
+                .Map(dest => dest.Likes, src => new List<Like>());
+
         }
     }
 }

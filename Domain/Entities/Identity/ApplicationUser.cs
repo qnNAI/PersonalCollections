@@ -14,5 +14,6 @@ namespace Domain.Entities.Identity
 		public DateTime RegistrationDate { get; set; }
 
 		public ICollection<Collection> Collections { get; set; } = new List<Collection>();
-	}
+        public ICollection<Like> Likes { get; set; } = new List<Like>();
+    }
 }

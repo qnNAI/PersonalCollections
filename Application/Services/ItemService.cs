@@ -118,6 +118,7 @@ namespace Application.Services
                 .Include(x => x.Fields)
                     .ThenInclude(x => x.CollectionField)
                         .ThenInclude(x => x.FieldType)
+                .Include(x => x.Likes)
                 .ProjectToType<ItemDto>()
                 .ToListAsync(cancellationToken);
 
@@ -155,6 +156,8 @@ namespace Application.Services
                 return new RemoveItemResponse { Succeeded = false };
             }
 
+            var likes = await _context.Likes.Where(x => x.ItemId == itemId).ToListAsync();
+            _context.Likes.RemoveRange(likes);
             _context.Items.Remove(item);
             await _context.SaveChangesAsync();
 
@@ -172,6 +175,52 @@ namespace Application.Services
                 .FirstOrDefaultAsync();
 
             return item?.Adapt<ItemDto>();
+        }
+
+        public async Task<bool> AddLikeAsync(string userId, string itemId)
+        {
+            var isExists = (await _context.Likes.FindAsync(userId, itemId)) is not null;
+            if(isExists)
+            { 
+                return false;
+            }
+
+            _context.Likes.Add(new Like
+            {
+                UserId = userId,
+                ItemId = itemId
+            });
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> RemoveLikeAsync(string userId, string itemId)
+        {
+            var existing = await _context.Likes.FindAsync(userId, itemId);
+            if(existing is null)
+            {
+                return false;
+            }
+
+            _context.Likes.Remove(existing);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<int> CountLikesAsync(string itemId)
+        {
+            var likes = await _context.Likes
+                .Where(x => x.ItemId == itemId)
+                .CountAsync();
+
+            return likes;
+        }
+
+        public async Task<bool> IsLikedAsync(string userId, string itemId)
+        {
+            return (await _context.Likes.FindAsync(userId, itemId)) is not null;
         }
 
         private async Task PrepareTagsAsync(Item item)
@@ -208,21 +257,5 @@ namespace Application.Services
                 tag.Name = tag.Name.ToLower();
             }
         }
-
-        private class TagComparer : IEqualityComparer<Tag>
-        {
-            public bool Equals(Tag? x, Tag? y)
-            {
-                if (x == y) return true;
-                if (x == null || y == null) return false;
-                return x.Id == y.Id;
-            }
-
-            public int GetHashCode([DisallowNull] Tag tag)
-            {
-                return tag.Id.GetHashCode();
-            }
-        }
-
     }
 }

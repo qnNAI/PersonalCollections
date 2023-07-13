@@ -19,5 +19,7 @@ namespace Domain.Entities.Items {
         public ICollection<ItemTag> ItemTags { get; set; } = new List<ItemTag>();
 
         public ICollection<ItemField> Fields { get; set; } = new List<ItemField>();
+
+        public ICollection<Like> Likes { get; set; } = new List<Like>();
     }
 }

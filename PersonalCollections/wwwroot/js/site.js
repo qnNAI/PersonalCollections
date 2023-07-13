@@ -378,3 +378,48 @@ function loadTheme() {
     }, false);
     
 }
+
+function toggleLike(url, itemId) {
+    let btn = document.getElementById('like-btn');
+    let action;
+    if (btn.getAttribute('data-liked') === 'like') {
+        action = 'dislike';
+    }
+    else {
+        action = 'like';
+    }
+    
+    $.ajax({
+        url: `${url}`,
+        type: 'POST',
+        cache: false,
+        async: true,
+        dataType: 'html',
+        data: {
+            itemId: itemId,
+            action: action
+        }
+    }).done(result => {
+        if (btn.getAttribute('data-liked') === 'like') {
+            btn.removeAttribute('data-liked');
+        }
+        else {
+            btn.setAttribute('data-liked', 'like');
+        }
+        document.getElementById('likes').innerText = result;
+
+        let icons = document.getElementsByClassName('like-icon');
+        for (let icon of icons) {
+            if (icon.classList.contains('d-none')) {
+                icon.classList.remove('d-none');
+            }
+            else {
+                icon.classList.add('d-none');
+            }
+        }
+    }).fail(result => {
+        showWarning("Like failed!");
+    });
+
+
+}

@@ -13,6 +13,8 @@ namespace Application.Models.Item {
         public string Name { get; set; } = null!;
         public string CollectionId { get; set; } = null!;
 
+        public int Likes { get; set; }
+
         public List<ItemFieldDto> Fields { get; set; } = new List<ItemFieldDto>();
         public List<TagDto> Tags { get; set; } = new List<TagDto>();
     }
