@@ -230,6 +230,7 @@ namespace Application.Services
                 .OrderByDescending(x => x.SentTime)
                 .Skip(skip)
                 .Take(pageSize)
+                .Include(x => x.User)
                 .ProjectToType<CommentDto>()
                 .ToListAsync();
 

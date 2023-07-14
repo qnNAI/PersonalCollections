@@ -153,6 +153,13 @@ namespace PersonalCollections.Controllers
             return RedirectToAction("Collection", "Collection", new { collectionId = request.CollectionId });
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Comments(string itemId, int skip, int pageSize)
+        {
+            var comments = await _itemService.GetCommentsAsync(itemId, skip, pageSize);
+            return PartialView("_CommentsPartial", comments);
+        }
+
         private async Task<bool> _ValidateAuthorAsync(string collectionId)
         {
             var collection = await _collectionService.GetByIdAsync(collectionId);

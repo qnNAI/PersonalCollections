@@ -469,3 +469,46 @@ function sendComment() {
 
     textArea.value = '';
 }
+
+function loadComments() {
+    let commentsContainer = document.getElementById('comments');
+    let commentsCount = [...commentsContainer.children].length;
+    let itemId = document.getElementById('item-id').value;
+    debugger;
+    $.ajax({
+        beforeSend: () => $('#loader').show(),
+        complete: () => $('#loader').hide(),
+        url: 'Comments',
+        type: 'GET',
+        cache: false,
+        async: true,
+        dataType: 'html',
+        data: {
+            itemId,
+            skip: commentsCount,
+            pageSize: 5
+        }
+    }).done(result => {
+        if (result === '\r\n') {
+            window.removeEventListener("scroll", handleScroll);
+        } else {
+            commentsContainer.innerHTML += result;
+        }
+    });
+
+}
+
+function addInfiniteScroll() {
+    window.addEventListener("scroll", handleScroll);
+}
+
+let scrollTimer;
+function handleScroll() {
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(function () {
+        const endOfPage = window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
+        if (endOfPage) {
+            loadComments();
+        }
+    }, 500);
+} 
