@@ -433,7 +433,7 @@ function setupHubEndpoints() {
     hubConnection.on('NewComment', (comment, date) => {
         let commentEl = htmlToElement(`
             <div class="col-12 col-lg-6 border-bottom pb-1 mb-3">
-            <a class="link-underline link-underline-opacity-0" href="Collection/CollectionsManagement?userId=${comment.userId}">${comment.author.userName}</a>
+            <a class="link-underline link-underline-opacity-0" href="/Collection/CollectionsManagement?userId=${comment.userId}">${comment.author.userName}</a>
             <p class="text-muted small mb-2">
                 ${date}
             </p>

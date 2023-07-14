@@ -4,7 +4,7 @@
 @model CollectionsManagementResponse;
 
 @{
-    ViewData["Title"] = "Collections management";
+    ViewData["Title"] = "Collections";
     var mdPipeline = new MarkdownPipelineBuilder()
         .UseAdvancedExtensions()
         .UseBootstrap()
@@ -19,7 +19,7 @@
     var isAuthor = (User.Identity?.IsAuthenticated ?? false) && (User.IsInRole("Admin") || User.FindFirstValue(ClaimTypes.NameIdentifier) == Model.Author.Id);
 }
 
-<h3 class="mt-5">Collections management</h3>
+<h3 class="mt-5">Collections</h3>
 
 <h5 class="mt-5">@Model.Author.UserName collections</h5>
 <div class="mt-4">
