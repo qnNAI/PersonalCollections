@@ -47,6 +47,9 @@ namespace Application.Common.Mappings {
                 .NewConfig()
                 .Map(dest => dest.Likes, src => new List<Like>());
 
+            TypeAdapterConfig<Comment, CommentDto>
+                .NewConfig()
+                .Map(dest => dest.Author, src => src.User);
         }
     }
 }

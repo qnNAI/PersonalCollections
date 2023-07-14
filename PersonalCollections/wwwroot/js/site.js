@@ -429,4 +429,43 @@ function setupHubEndpoints() {
     hubConnection.on('LikesUpdate', (likes) => {
         document.getElementById('likes').innerText = likes;
     });
+
+    hubConnection.on('NewComment', (comment, date) => {
+        let commentEl = htmlToElement(`
+            <div class="col-12 col-lg-6 border-bottom pb-1 mb-3">
+            <a class="link-underline link-underline-opacity-0" href="Collection/CollectionsManagement?userId=${comment.userId}">${comment.author.userName}</a>
+            <p class="text-muted small mb-2">
+                ${date}
+            </p>
+            <span>
+                ${comment.text}
+            </span>
+        </div>`);
+        let commentsContainer = document.getElementById('comments');
+        commentsContainer.prepend(commentEl);
+    });
+
+    hubConnection.on('CommentFailed', (message) => {
+        showWarning(message);
+    });
+}
+
+function htmlToElement(html) {
+    var template = document.createElement('template');
+    html = html.trim();
+    template.innerHTML = html;
+    return template.content.firstChild;
+}
+
+function sendComment() {
+    let textArea = document.getElementById('comment-text');
+    let text = textArea.value;
+    let itemId = document.getElementById('item-id').value;
+    debugger;
+    hubConnection.invoke('Comment', {
+        text,
+        itemId
+    });
+
+    textArea.value = '';
 }

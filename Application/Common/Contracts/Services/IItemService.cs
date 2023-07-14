@@ -12,15 +12,20 @@ namespace Application.Common.Contracts.Services
     {
         Task<List<ItemFieldDto>> GetItemFieldsAsync(string collectionId);
         Task<IEnumerable<TagDto>> GetTagsByPrefixAsync(string prefix);
+
         Task<AddItemResponse> AddItemAsync(AddItemRequest request);
         Task UpdateItemAsync(ItemDto request);
         Task<IEnumerable<ItemDto>> GetItemsAsync(GetItemsRequest request, CancellationToken cancellationToken);
         Task<int> CountItemsAsync(string collectionId, string filter, IEnumerable<GetItemsRequest.DateEntry> dateEntries, CancellationToken cancellationToken);
         Task<RemoveItemResponse> RemoveAsync(string itemId);
         Task<ItemDto?> GetByIdAsync(string itemId);
+
         Task<bool> AddLikeAsync(string userId, string itemId);
         Task<bool> RemoveLikeAsync(string userId, string itemId);
         Task<int> CountLikesAsync(string itemId);
         Task<bool> IsLikedAsync(string userId, string itemId);
+
+        Task<IEnumerable<CommentDto>> GetCommentsAsync(string itemId, int skip, int pageSize);
+        Task<AddCommentResponse> AddCommentAsync(CommentDto comment);
     }
 }

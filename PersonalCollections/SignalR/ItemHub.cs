@@ -1,8 +1,10 @@
 ﻿using System.Security.Claims;
 using Application.Common.Contracts.Services;
+using Application.Models.Item;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.IdentityModel.Tokens;
 
 namespace PersonalCollections.SignalR
 {
@@ -46,6 +48,30 @@ namespace PersonalCollections.SignalR
                 await Clients.Caller.SendAsync("LikeSuccess");
                 await Clients.Group(itemId).SendAsync("LikesUpdate", likes);
             }
+        }
+
+        [Authorize]
+        public async Task Comment(CommentDto comment)
+        {
+            string userId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+            if(string.IsNullOrEmpty(comment.Text))
+            {
+                await Clients.Caller.SendAsync("CommentFailed", "Empty comment text!");
+                return;
+            }
+
+            comment.UserId = userId;
+            var result = await _itemService.AddCommentAsync(comment);
+
+            if (!result.Succeeded)
+            {
+                await Clients.Caller.SendAsync("CommentFailed", "Failed to comment!");
+                return;
+            }
+
+            var date = comment.SentTime.ToLocalTime().ToShortDateString() + " " + comment.SentTime.ToLocalTime().ToShortTimeString();
+            await Clients.Group(comment.ItemId).SendAsync("NewComment", result.Comment, date);
         }
     }
 }

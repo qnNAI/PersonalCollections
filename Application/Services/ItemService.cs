@@ -223,6 +223,43 @@ namespace Application.Services
             return (await _context.Likes.FindAsync(userId, itemId)) is not null;
         }
 
+        public async Task<IEnumerable<CommentDto>> GetCommentsAsync(string itemId, int skip, int pageSize)
+        {
+            var comments = await _context.Comments.AsNoTracking()
+                .Where(x => x.ItemId == itemId)
+                .OrderByDescending(x => x.SentTime)
+                .Skip(skip)
+                .Take(pageSize)
+                .ProjectToType<CommentDto>()
+                .ToListAsync();
+
+            return comments;
+        }
+
+        public async Task<AddCommentResponse> AddCommentAsync(CommentDto comment)
+        {
+            var isExists = await _context.Items.AnyAsync(x => x.Id == comment.ItemId);
+            if (!isExists)
+            {
+                return new AddCommentResponse { Succeeded = false };
+            }
+
+            comment.Id = Guid.NewGuid().ToString();
+            comment.SentTime = DateTime.UtcNow;
+            _context.Comments.Add(comment.Adapt<Comment>());
+            await _context.SaveChangesAsync();
+
+            var created = await _context.Comments.AsNoTracking()
+                .Include(x => x.User)
+                .FirstAsync(x => x.Id == comment.Id);
+
+            return new AddCommentResponse
+            {
+                Succeeded = true,
+                Comment = created.Adapt<CommentDto>()
+            };
+        }
+
         private async Task PrepareTagsAsync(Item item)
         {
             var tagNames = item.Tags.Select(x => x.Name);

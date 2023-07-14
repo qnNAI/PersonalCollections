@@ -24,6 +24,7 @@ namespace Application.Common.Contracts.Contexts
         DbSet<Tag> Tags { get; set; }
         DbSet<ItemTag> ItemTags { get; set; }
         DbSet<Like> Likes { get; set; }
+        DbSet<Comment> Comments { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         EntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class;
