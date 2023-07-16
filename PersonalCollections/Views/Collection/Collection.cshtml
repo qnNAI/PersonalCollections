@@ -97,9 +97,11 @@
                 <th>Tags</th>
                 @foreach(var field in Model.Fields
                     .Where(x => x.FieldType.Name == CollectionTypes.STRING || x.FieldType.Name == CollectionTypes.DATE)
-                    .OrderBy(x => x.Order)) {
-                    <th>@field.Name</th>
+                    .OrderBy(x => x.Order)) 
+                {
+                    <th class="d-none d-lg-table-cell">@field.Name</th>
                 }
+                <th class="d-table-cell d-lg-none"></th>
                 <th></th>
             </tr>
         </thead>
@@ -129,6 +131,9 @@
         </ul>
     </nav>
 </div>
+
+
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {

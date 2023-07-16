@@ -6,7 +6,7 @@
 
 @foreach(var item in Model.Items) {
     <tr id="@item.Id">
-        <td class="pt-3 pb-3">
+        <td class="pt-3 pb-3 t-nowrap">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#b01279" class="bi bi-heart-fill" viewBox="0 0 16 16">
                 <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z" />
             </svg>
@@ -20,15 +20,42 @@
         {
             if(field.CollectionField.FieldType.Name == CollectionTypes.DATE && !string.IsNullOrEmpty(field.Value))
             {
-                <td>
+                <td class="d-none d-lg-table-cell">
                     <input type="date" readonly class="form-control-plaintext" value="@field.Value">
                 </td>
             } 
             else
             {
-                <td class="t-nowrap pt-3">@field.Value</td>
+                <td class="t-nowrap pt-3 d-none d-lg-table-cell">@field.Value</td>
             }
         }
+        <td class="d-table-cell d-lg-none">
+            <button class="btn" type="button" data-bs-toggle="collapse" data-bs-target="#item-@item.Id" aria-expanded="false" aria-controls="item-@item.Id">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-square-fill" viewBox="0 0 16 16">
+                    <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm4 4a.5.5 0 0 0-.374.832l4 4.5a.5.5 0 0 0 .748 0l4-4.5A.5.5 0 0 0 12 6H4z" />
+                </svg>
+            </button>
+
+            <div class="collapse ps-2" id="item-@item.Id">
+                @foreach(var field in item.Fields
+               .Where(x => x.CollectionField.FieldType.Name == CollectionTypes.STRING || x.CollectionField.FieldType.Name == CollectionTypes.DATE)
+               .OrderBy(x => x.CollectionField.Order))
+                {
+                    <div class="col-12 mt-2">
+                        <label class="col-form-label">@field.CollectionField.Name: </label>
+                        @if(field.CollectionField.FieldType.Name == CollectionTypes.DATE && !string.IsNullOrEmpty(field.Value))
+                        {
+                        <input type="date" readonly class="form-control-plaintext" value="@field.Value">
+                        }
+                        else
+                        {
+                        @field.Value
+                        }
+                        <hr/>
+                    </div>
+                }
+            </div>
+        </td>
         <td class="last-col pt-2">
             @if ((User.Identity?.IsAuthenticated ?? false) && (User.IsInRole("Admin") || User.FindFirstValue(ClaimTypes.NameIdentifier) == Model.UserId))
             {

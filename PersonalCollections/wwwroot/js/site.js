@@ -474,7 +474,7 @@ function loadComments() {
     let commentsContainer = document.getElementById('comments');
     let commentsCount = [...commentsContainer.children].length;
     let itemId = document.getElementById('item-id').value;
-    debugger;
+
     $.ajax({
         beforeSend: () => $('#loader').show(),
         complete: () => $('#loader').hide(),
