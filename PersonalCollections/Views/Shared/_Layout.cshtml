@@ -15,7 +15,7 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-md navbar-toggleable-md  border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-xl navbar-toggleable-xl  border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-controller="Home" asp-action="Index">Personal Collections</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -40,12 +40,18 @@
                                 </a>
                             </li>
                         }
+                        <li>
+                            <form asp-action="Search" asp-controller="Item" method="get" class="d-flex mt-3 mt-xl-0 ms-xl-4 col-12 col-md-8 col-lg-6 col-xl-12" role="search">
+                                <input class="form-control me-2 " type="search" placeholder="..." id="filter" name="term" aria-label="Search">
+                                <button class="btn btn-outline-success" type="submit">Search</button>
+                            </form>
+                        </li>
                     </ul>
                 </div>
 
 
 
-                <div class="navbar-collapse collapse d-md-inline-flex justify-content-end mt-3 mt-md-0">
+                <div class="navbar-collapse collapse d-xl-inline-flex justify-content-end mt-3 mt-xl-0">
                     <div class="dropdown me-3">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-moon-stars-fill" viewBox="0 0 16 16">

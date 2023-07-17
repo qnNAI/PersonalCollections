@@ -160,6 +160,18 @@ namespace PersonalCollections.Controllers
             return PartialView("_CommentsPartial", comments);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Search(string term, CancellationToken cancellationToken = default)
+        {
+            var items = await _itemService.GetItemsAsync(term, 1, 10, cancellationToken);
+
+            return View(new SearchItemsResponse
+            {
+                Term = term,
+                Items = items
+            });
+        }
+
         private async Task<bool> _ValidateAuthorAsync(string collectionId)
         {
             var collection = await _collectionService.GetByIdAsync(collectionId);

@@ -125,6 +125,22 @@ namespace Application.Services
             return items;
         }
 
+        public async Task<IEnumerable<ItemDto>> GetItemsAsync(string term, int page, int pageSize, CancellationToken cancellationToken)
+        {
+            var items = await _context.Items
+                .AsNoTracking()
+                .Where(x => EF.Functions.Contains(x.Name, term))
+                .OrderBy(x => x.Name)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Include(x => x.Collection)
+                .Include(x => x.Tags)
+                .ProjectToType<ItemDto>()
+                .ToListAsync(cancellationToken);
+
+            return items;
+        }
+
         private static IQueryable<Item> ApplyFilters(string filter, IEnumerable<GetItemsRequest.DateEntry> dateEntries, IQueryable<Item> itemsQuery)
         {
             if(!string.IsNullOrEmpty(filter))

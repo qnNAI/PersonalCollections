@@ -1,0 +1,34 @@
+﻿@using Application.Models.Item;
+@model SearchItemsResponse
+
+@{
+    ViewData["Title"] = "Search results";
+}
+
+@if(!string.IsNullOrEmpty(Model.Term)) 
+{
+    <h4 class="mt-5">Search results for: "@(Model.Term)"</h4>
+}
+
+<ul id="myTab" class="nav nav-tabs mt-5">
+    <li class="nav-item">
+        <a class="nav-link active" data-bs-toggle="tab" aria-current="page" href="#items-pane">Items</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#collections-pane">Collections</a>
+    </li>
+</ul>
+
+<div class="tab-content mt-4">
+    <div class="tab-pane active" id="items-pane" role="tabpanel" area-labelledby="items-pane">
+        @foreach(var item in Model.Items)
+        {
+            <span>@item.Name</span>
+        }
+    </div>
+
+    <div class="tab-pane fade" id="collections-pane" role="tabpanel" area-labelledby="collections-pane">
+        collections
+    </div>
+</div>
+
