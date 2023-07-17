@@ -161,9 +161,13 @@ namespace PersonalCollections.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Search(string term, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> Search(string term, int pageSize = 10, CancellationToken cancellationToken = default)
         {
-            var items = await _itemService.GetItemsAsync(term, 1, 10, cancellationToken);
+            if (string.IsNullOrEmpty(term))
+            {
+                return View(new SearchItemsResponse());
+            }
+            var items = await _itemService.GetItemsAsync(term, page: 1, pageSize, cancellationToken);
 
             return View(new SearchItemsResponse
             {

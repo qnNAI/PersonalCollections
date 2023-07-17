@@ -127,9 +127,12 @@ namespace Application.Services
 
         public async Task<IEnumerable<ItemDto>> GetItemsAsync(string term, int page, int pageSize, CancellationToken cancellationToken)
         {
-            var items = await _context.Items
-                .AsNoTracking()
+            var items = await _context.Items.AsNoTracking()
                 .Where(x => EF.Functions.Contains(x.Name, term))
+                .Include(x => x.Comments)
+                .Union(_context.Items.AsNoTracking()
+                    .Include(x => x.Comments)
+                    .Where(x => x.Comments.Any(c => EF.Functions.Contains(c.Text, term))))
                 .OrderBy(x => x.Name)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
@@ -309,6 +312,21 @@ namespace Application.Services
             foreach(var tag in item.Tags)
             {
                 tag.Name = tag.Name.ToLower();
+            }
+        }
+
+        private class ItemComparer : IEqualityComparer<Item>
+        {
+            public bool Equals(Item? x, Item? y)
+            {
+                if (x == y) return true;
+                if (x == null || y == null) return false;
+                return x.Id == y.Id;
+            }
+
+            public int GetHashCode([DisallowNull] Item obj)
+            {
+                return obj.Id.GetHashCode();
             }
         }
     }
