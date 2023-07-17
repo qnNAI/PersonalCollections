@@ -140,6 +140,19 @@ namespace Application.Services
             return collections;
         }
 
+        public async Task<IEnumerable<CollectionDto>> GetCollectionsAsync(string term, int page, int pageSize, CancellationToken cancellationToken) 
+        {
+            var collections = await _context.Collections.AsNoTracking()
+                .Where(x => EF.Functions.Contains(x.Name, term))
+                .Include(x => x.User)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ProjectToType<CollectionDto>()
+                .ToListAsync(cancellationToken);
+
+            return collections;
+        }
+
         public async Task<CollectionDto?> GetByIdAsync(string id) {
             var collection = (await _context.Collections
                 .Include(x => x.Fields)

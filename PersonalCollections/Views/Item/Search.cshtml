@@ -21,14 +21,14 @@
 
 <div class="tab-content mt-4">
     <div class="tab-pane active" id="items-pane" role="tabpanel" area-labelledby="items-pane">
-        @foreach(var item in Model.Items)
-        {
-            <span>@item.Name</span>
-        }
+        <partial name="_SearchItemsResult" model="Model.Items"/>
     </div>
 
     <div class="tab-pane fade" id="collections-pane" role="tabpanel" area-labelledby="collections-pane">
-        collections
+        @foreach(var collection in Model.Collections)
+        {
+            <span>@collection.Name</span>
+        }
     </div>
 </div>
 

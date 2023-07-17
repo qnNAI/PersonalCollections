@@ -13,6 +13,7 @@ namespace Application.Common.Contracts.Services
         Task<EditCollectionResponse> UpdateAsync(EditCollectionRequest request);
         Task<RemoveCollectionResponse> RemoveAsync(string collectionId);
         Task<IEnumerable<CollectionDto>> GetCollectionsAsync(string userId);
+        Task<IEnumerable<CollectionDto>> GetCollectionsAsync(string term, int page, int pageSize, CancellationToken cancellationToken);
         Task<CollectionDto?> GetByIdAsync(string id);
     }
 }

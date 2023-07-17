@@ -168,11 +168,13 @@ namespace PersonalCollections.Controllers
                 return View(new SearchItemsResponse());
             }
             var items = await _itemService.GetItemsAsync(term, page: 1, pageSize, cancellationToken);
+            var collections = await _collectionService.GetCollectionsAsync(term, page: 1, pageSize, cancellationToken);
 
             return View(new SearchItemsResponse
             {
                 Term = term,
-                Items = items
+                Items = items,
+                Collections = collections
             });
         }
 
