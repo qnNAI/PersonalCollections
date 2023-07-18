@@ -77,6 +77,13 @@ namespace Application.Services
             var collectionToUpdate = request.Adapt<Collection>();
             await UpdateCollectionAsync(request, existing, collectionToUpdate);
 
+            await UpdateCollectionItems(existing, newFields);
+
+            return new EditCollectionResponse { Succeeded = true };
+        }
+
+        private async Task UpdateCollectionItems(Collection existing, List<CollectionField> newFields)
+        {
             var itemIds = _context.Items.Where(x => x.CollectionId == existing.Id).Select(x => x.Id);
             var newEntries = new List<ItemField>();
             foreach(var itemId in itemIds)
@@ -90,8 +97,6 @@ namespace Application.Services
             }
 
             await _context.ItemFields.BulkInsertAsync(newEntries);
-
-            return new EditCollectionResponse { Succeeded = true };
         }
 
         private async Task UpdateCollectionAsync(EditCollectionRequest request, Collection? existing, Collection collectionToUpdate)

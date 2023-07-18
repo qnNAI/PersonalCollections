@@ -122,6 +122,7 @@ namespace Application.Services
                     .ThenInclude(x => x.CollectionField)
                         .ThenInclude(x => x.FieldType)
                 .Include(x => x.Likes)
+                .Include(x => x.Tags)
                 .ToListAsync(cancellationToken);
 
             return items.Adapt<List<ItemDto>>();
