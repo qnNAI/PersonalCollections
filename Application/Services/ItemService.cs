@@ -56,6 +56,7 @@ namespace Application.Services
             NormalizeTags(item);
 
             item.Id = Guid.NewGuid().ToString();
+            item.CreationDate = DateTime.UtcNow;
             await PrepareTagsAsync(item);
 
             _context.Items.Add(item);
@@ -72,6 +73,7 @@ namespace Application.Services
                 .FirstAsync(x => x.Id == request.Id);
 
             var item = request.Adapt<Item>();
+            item.CreationDate = existing.CreationDate;
             NormalizeTags(item);
 
             await PrepareTagsAsync(item);
@@ -143,6 +145,16 @@ namespace Application.Services
                 .ToListAsync(cancellationToken);
 
             return items;
+        }
+
+        public async Task<IEnumerable<ItemDto>> GetLatestItemsAsync(int pageSize, CancellationToken cancellationToken)
+        {
+            var items = await _context.Items.AsNoTracking()
+                .OrderByDescending(x => x.CreationDate)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+
+            return items.Adapt<List<ItemDto>>();
         }
 
         private static IQueryable<Item> ApplyFilters(string filter, IEnumerable<GetItemsRequest.DateEntry> dateEntries, IQueryable<Item> itemsQuery)

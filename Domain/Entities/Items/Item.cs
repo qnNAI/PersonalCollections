@@ -11,6 +11,7 @@ namespace Domain.Entities.Items {
 
         public string Name { get; set; } = null!;
         public string CollectionId { get; set; } = null!;
+        public DateTime CreationDate { get; set; }
 
         [ForeignKey(nameof(CollectionId))]
         public Collection Collection { get; set; } = null!;

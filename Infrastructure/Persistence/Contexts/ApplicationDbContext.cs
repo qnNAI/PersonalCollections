@@ -48,10 +48,6 @@ namespace Infrastructure.Persistence.Contexts
                 .Property(e => e.Name)
                 .HasMaxLength(255);
 
-            builder.Entity<Item>()
-                .Property(e => e.Name)
-                .HasMaxLength(255);
-
             builder.Entity<CollectionTheme>()
                 .Property(e => e.Name)
                 .HasMaxLength(255);
