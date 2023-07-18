@@ -42,8 +42,11 @@
                         }
                         <li>
                             <form asp-action="Search" asp-controller="Item" method="get" class="d-flex mt-3 mt-xl-0 ms-xl-4 col-12 col-md-8 col-lg-6 col-xl-12" role="search">
-                                <input class="form-control me-2 " type="search" placeholder="..." id="filter" name="term" aria-label="Search">
-                                <button class="btn btn-outline-success" type="submit">Search</button>
+                                <input class="form-control me-2 " type="search" placeholder="..." id="search-term" name="term" aria-label="Search">
+                                <button class="btn btn-outline-success d-flex flex-row gap-2 align-items-center" type="submit" onclick="searchShowSpinner()">
+                                    Search
+                                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="srch-spinner"></span>
+                                </button>
                             </form>
                         </li>
                     </ul>

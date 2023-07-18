@@ -178,6 +178,14 @@ namespace PersonalCollections.Controllers
             });
         }
 
+        [HttpGet]
+        public async Task<IActionResult> SearchItems(string term, int page = 1, int pageSize = 10, CancellationToken cancellationToken = default)
+        {
+            var items = await _itemService.GetItemsAsync(term, page, pageSize, cancellationToken);
+
+            return PartialView("_SearchItemsResultPartial", items);
+        }
+
         private async Task<bool> _ValidateAuthorAsync(string collectionId)
         {
             var collection = await _collectionService.GetByIdAsync(collectionId);

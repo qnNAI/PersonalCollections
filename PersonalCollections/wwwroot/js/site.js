@@ -512,3 +512,100 @@ function handleScroll() {
         }
     }, 500);
 } 
+
+function searchShowSpinner() {
+    let spinner = document.getElementById('srch-spinner');
+    spinner.classList.remove('d-none');
+}
+
+function addSearchItemsInfiniteScroll() {
+    window.addEventListener("scroll", handleSearchInfiniteScroll);
+}
+
+let searchScrollTimer;
+function handleSearchInfiniteScroll() {
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(function () {
+        const endOfPage = window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
+        if (endOfPage) {
+            let itemsPane = document.getElementById('items-pane');
+
+            if (itemsPane.classList.contains('active')) {
+                if (isItemsRemaining) {
+                    searchItems();
+                }
+            }
+            else {
+                if (isCollectionsRemaining) {
+                    searchCollections();
+                }
+            }
+        }
+    }, 500);
+}
+
+let itemsPage = 2;
+let isItemsRemaining = true;
+function searchItems() {
+    let term = document.getElementById('term-hidden').value;
+    let itemsContainer = document.getElementById('items-pane');
+
+    if (term === undefined || term === '') {
+        return;
+    }
+
+    $.ajax({
+        beforeSend: () => $('#loader').show(),
+        complete: () => $('#loader').hide(),
+        url: 'SearchItems',
+        type: 'GET',
+        cache: false,
+        async: true,
+        dataType: 'html',
+        data: {
+            term,
+            page: itemsPage,
+            pageSize: 10
+        }
+    }).done(result => {
+        if (result === '\r\n') {
+            isItemsRemaining = false;
+        } else {
+            itemsContainer.innerHTML += result;
+            itemsPage++;
+        }
+    });
+}
+
+let collectionsPage = 2;
+let isCollectionsRemaining = true;
+function searchCollections() {
+    let term = document.getElementById('term-hidden').value;
+    let collectionsContainer = document.getElementById('collections-pane');
+
+    if (term === undefined || term === '') {
+        return;
+    }
+
+    $.ajax({
+        beforeSend: () => $('#loader').show(),
+        complete: () => $('#loader').hide(),
+        url: '/Collection/SearchCollections',
+        type: 'GET',
+        cache: false,
+        async: true,
+        dataType: 'html',
+        data: {
+            term,
+            page: collectionsPage,
+            pageSize: 10
+        }
+    }).done(result => {
+        if (result === '\r\n') {
+            isCollectionsRemaining = false;
+        } else {
+            collectionsContainer.innerHTML += result;
+            collectionsPage++;
+        }
+    });
+}

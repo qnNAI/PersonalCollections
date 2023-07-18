@@ -90,3 +90,16 @@ input[type=number] {
 .border-color-like {
     border: 1px solid #b01279;
 }
+
+.border-round {
+    border-radius: 20px;
+}
+
+.item-pane {
+    box-shadow: 0 2px var(--bs-secondary);
+}
+
+    .item-pane:hover {
+        border: 1px solid var(--bs-success) !important;
+        box-shadow: 0 2px var(--bs-success);
+    }

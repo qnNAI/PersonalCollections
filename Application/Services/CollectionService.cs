@@ -143,7 +143,7 @@ namespace Application.Services
         public async Task<IEnumerable<CollectionDto>> GetCollectionsAsync(string term, int page, int pageSize, CancellationToken cancellationToken) 
         {
             var collections = await _context.Collections.AsNoTracking()
-                .Where(x => EF.Functions.Contains(x.Name, term))
+                .Where(x => EF.Functions.Contains(x.Name, term) || EF.Functions.Contains(x.Description, term))
                 .Include(x => x.User)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)

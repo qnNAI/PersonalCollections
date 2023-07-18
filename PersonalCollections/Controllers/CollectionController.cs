@@ -135,6 +135,13 @@ namespace PersonalCollections.Controllers
             return View(collection);
         }
 
+        public async Task<IActionResult> SearchCollections(string term, int page, int pageSize, CancellationToken cancellationToken = default)
+        {
+            var collections = await _collectionService.GetCollectionsAsync(term, page, pageSize, cancellationToken);
+
+            return PartialView("_SearchCollectionsResultPartial", collections);
+        }
+
         private async Task<IActionResult> _EditCollectionFailedResponseAsync(CollectionDto collection, EditCollectionRequest request)
         {
             var response = collection.Adapt<EditCollectionRequest>();

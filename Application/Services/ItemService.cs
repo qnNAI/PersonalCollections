@@ -12,6 +12,7 @@ using Domain.Entities.Items;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Z.EntityFramework.Plus;
 
 namespace Application.Services
 {
@@ -137,7 +138,7 @@ namespace Application.Services
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Include(x => x.Collection)
-                .Include(x => x.Tags)
+                    .ThenInclude(x => x.User)
                 .ProjectToType<ItemDto>()
                 .ToListAsync(cancellationToken);
 
@@ -175,8 +176,8 @@ namespace Application.Services
                 return new RemoveItemResponse { Succeeded = false };
             }
 
-            var likes = await _context.Likes.Where(x => x.ItemId == itemId).ToListAsync();
-            _context.Likes.RemoveRange(likes);
+            await _context.Likes.Where(x => x.ItemId == itemId).DeleteAsync();
+            await _context.Comments.Where(x => x.ItemId == itemId).DeleteAsync();
             _context.Items.Remove(item);
             await _context.SaveChangesAsync();
 

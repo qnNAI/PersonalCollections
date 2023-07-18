@@ -15,6 +15,8 @@ namespace Application.Models.Item {
 
         public int Likes { get; set; }
 
+        public CollectionDto Collection { get; set; } = null!;
+
         public List<ItemFieldDto> Fields { get; set; } = new List<ItemFieldDto>();
         public List<TagDto> Tags { get; set; } = new List<TagDto>();
     }
