@@ -14,24 +14,31 @@ namespace PersonalCollections.Filters
 
             if (userId is null)
             {
-                context.Result = controller.Forbid();
+                Forbid(context, controller);
                 return;
             }
 
             var currentUser = context.HttpContext.User;
             if (currentUser is null)
             {
-                context.Result = controller.Forbid();
+                Forbid(context, controller);
                 return;
             }
 
             if (currentUser?.FindFirstValue(ClaimTypes.NameIdentifier) != userId && !currentUser.IsInRole("Admin"))
             {
-                context.Result = controller.Forbid();
+                Forbid(context, controller);
                 return;
             }
 
             await base.OnActionExecutionAsync(context, next);
+        }
+
+        private void Forbid(ActionExecutingContext context, Controller? controller)
+        {
+            context.Result = controller.Forbid();
+            var logger = context.HttpContext.RequestServices.GetService<ILogger<AuthorFilterAttribute>>();
+            logger.LogWarning("Unauthorized attempt to access author resourses: {userId}", context.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier));
         }
     }
 }

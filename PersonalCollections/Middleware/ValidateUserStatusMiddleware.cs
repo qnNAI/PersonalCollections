@@ -3,11 +3,11 @@ using Domain.Entities.Identity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 
-namespace PersonalCollections.Middleware {
+namespace PersonalCollections.Middleware
+{
 
-
-
-    public class ValidateUserStatusMiddleware {
+    public class ValidateUserStatusMiddleware
+    {
         private readonly RequestDelegate _next;
 
         public ValidateUserStatusMiddleware(RequestDelegate next)
@@ -15,21 +15,30 @@ namespace PersonalCollections.Middleware {
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager) {
+        public async Task InvokeAsync(
+            HttpContext context,
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+            ILogger<ValidateUserStatusMiddleware> logger
+            )
+        {
             var userPrincipal = context.User;
 
             var username = userPrincipal.Identity.Name;
 
-            if (username is null) {
+            if(username is null)
+            {
                 await _next(context);
                 return;
             }
 
             var user = await userManager.FindByNameAsync(username);
 
-            if(user is null || !user.IsActive) {
+            if(user is null || !user.IsActive)
+            {
                 await context.ForbidAsync();
                 await signInManager.SignOutAsync();
+                logger.LogWarning("Unauthorized attempt to access resourses: inactive user - {userId}", user.Id);
                 return;
             }
 
@@ -37,9 +46,11 @@ namespace PersonalCollections.Middleware {
         }
     }
 
-    public static class ValidateUserStatusMiddlewareExtensions {
+    public static class ValidateUserStatusMiddlewareExtensions
+    {
 
-        public static IApplicationBuilder UseUserStatusValidation(this IApplicationBuilder builder) {
+        public static IApplicationBuilder UseUserStatusValidation(this IApplicationBuilder builder)
+        {
             return builder.UseMiddleware<ValidateUserStatusMiddleware>();
         }
     }
