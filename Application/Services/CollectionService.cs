@@ -1,6 +1,7 @@
 ﻿using Application.Common.Contracts.Contexts;
 using Application.Common.Contracts.Services;
 using Application.Models.Collection;
+using Application.Models.Item;
 using Domain.Entities.Items;
 using Mapster;
 using Microsoft.AspNetCore.Http;
@@ -62,17 +63,33 @@ namespace Application.Services
                 };
             }
 
+            var newFields = new List<CollectionField>();
             request.Fields = request.Fields
                 .Where(x => x.Id is null)
                 .Select(x =>
                 {
                     x.Id = Guid.NewGuid().ToString();
+                    newFields.Add(x.Adapt<CollectionField>());
                     return x;
                 })
                 .ToList();
 
             var collectionToUpdate = request.Adapt<Collection>();
             await UpdateCollectionAsync(request, existing, collectionToUpdate);
+
+            var itemIds = _context.Items.Where(x => x.CollectionId == existing.Id).Select(x => x.Id);
+            var newEntries = new List<ItemField>();
+            foreach(var itemId in itemIds)
+            {
+                newEntries.AddRange(
+                    newFields.Select(x => new ItemField
+                    {
+                        CollectionFieldId = x.Id,
+                        ItemId = itemId
+                    }));
+            }
+
+            await _context.ItemFields.BulkInsertAsync(newEntries);
 
             return new EditCollectionResponse { Succeeded = true };
         }
@@ -89,6 +106,11 @@ namespace Application.Services
                 }
 
                 await UploadImageAsync(request.Image, collectionToUpdate);
+            } 
+            else
+            {
+                collectionToUpdate.ImageUrl = existing.ImageUrl;
+                collectionToUpdate.ImageName = existing.ImageName;
             }
 
             foreach(var field in collectionToUpdate.Fields)
