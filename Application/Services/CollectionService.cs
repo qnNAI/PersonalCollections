@@ -134,10 +134,9 @@ namespace Application.Services
                 .Where(x => x.UserId == userId)
                 .Include(x => x.Theme)
                 .OrderByDescending(x => x.CreationDate)
-                .ProjectToType<CollectionDto>()
                 .ToListAsync();
 
-            return collections;
+            return collections.Adapt<List<CollectionDto>>();
         }
 
         public async Task<IEnumerable<CollectionDto>> GetCollectionsAsync(string term, int page, int pageSize, CancellationToken cancellationToken) 
@@ -147,10 +146,9 @@ namespace Application.Services
                 .Include(x => x.User)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .ProjectToType<CollectionDto>()
                 .ToListAsync(cancellationToken);
 
-            return collections;
+            return collections.Adapt<List<CollectionDto>>();
         }
 
         public async Task<CollectionDto?> GetByIdAsync(string id) {

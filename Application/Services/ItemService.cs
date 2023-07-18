@@ -122,10 +122,9 @@ namespace Application.Services
                     .ThenInclude(x => x.CollectionField)
                         .ThenInclude(x => x.FieldType)
                 .Include(x => x.Likes)
-                .ProjectToType<ItemDto>()
                 .ToListAsync(cancellationToken);
 
-            return items;
+            return items.Adapt<List<ItemDto>>();
         }
 
         public async Task<IEnumerable<ItemDto>> GetItemsAsync(string term, int page, int pageSize, CancellationToken cancellationToken)
@@ -141,10 +140,9 @@ namespace Application.Services
                 .Take(pageSize)
                 .Include(x => x.Collection)
                     .ThenInclude(x => x.User)
-                .ProjectToType<ItemDto>()
                 .ToListAsync(cancellationToken);
 
-            return items;
+            return items.Adapt<List<ItemDto>>();
         }
 
         public async Task<IEnumerable<ItemDto>> GetLatestItemsAsync(int pageSize, CancellationToken cancellationToken)
@@ -263,10 +261,9 @@ namespace Application.Services
                 .Skip(skip)
                 .Take(pageSize)
                 .Include(x => x.User)
-                .ProjectToType<CommentDto>()
                 .ToListAsync();
 
-            return comments;
+            return comments.Adapt<List<CommentDto>>();
         }
 
         public async Task<AddCommentResponse> AddCommentAsync(CommentDto comment)
