@@ -24,7 +24,7 @@ namespace PersonalCollections.Controllers
 		{
 			var itemsTask = _itemService.GetLatestItemsAsync(pageSize: 10, cancellationToken);
 			var collectionsTask = _collectionService.GetLargestCollectionsAsync(pageSize: 5, cancellationToken);
-			var tagsTask = _itemService.GetLargestTags(pageSize: 20, cancellationToken);
+			var tagsTask = _itemService.GetLargestTags(pageSize: 30, cancellationToken);
 
 			return View(new MainPageResponse
 			{

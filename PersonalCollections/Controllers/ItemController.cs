@@ -186,6 +186,19 @@ namespace PersonalCollections.Controllers
             return PartialView("_SearchItemsResultPartial", items);
         }
 
+        [HttpGet]
+        public IActionResult SearchByTag(TagDto tag) {
+            return View(tag);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetItemsByTag(string tagId, int page = 1, int pageSize = 10, CancellationToken cancellationToken = default)
+        {
+            var items = await _itemService.GetItemsByTagId(tagId, page, pageSize, cancellationToken);
+
+            return PartialView("_SearchItemsResultPartial", items);
+        }
+
         private async Task<bool> _ValidateAuthorAsync(string collectionId)
         {
             var collection = await _collectionService.GetByIdAsync(collectionId);

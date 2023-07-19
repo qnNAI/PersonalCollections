@@ -134,9 +134,7 @@ namespace Application.Services
 
             var items = await context.Items.AsNoTracking()
                 .Where(x => EF.Functions.Contains(x.Name, term))
-                .Include(x => x.Comments)
                 .Union(context.Items.AsNoTracking()
-                    .Include(x => x.Comments)
                     .Where(x => x.Comments.Any(c => EF.Functions.Contains(c.Text, term))))
                 .OrderBy(x => x.Name)
                 .Skip((page - 1) * pageSize)
@@ -307,6 +305,23 @@ namespace Application.Services
                 .ToListAsync(cancellationToken);
 
             return tags.Adapt<List<TagDto>>();
+        }
+
+        public async Task<IEnumerable<ItemDto>> GetItemsByTagId(string tagId, int page, int pageSize, CancellationToken cancellationToken)
+        {
+            var items = await _context.ItemTags.AsNoTracking()
+                .Where(x => x.TagId == tagId)
+                .Include(x => x.Item)
+                    .ThenInclude(x => x.Collection)
+                        .ThenInclude(x => x.User)
+                .Select(x => x.Item)
+                .OrderByDescending(x => x.CreationDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                
+                .ToListAsync(cancellationToken);
+
+            return items.Adapt<List<ItemDto>>();
         }
 
         private async Task PrepareTagsAsync(Item item)

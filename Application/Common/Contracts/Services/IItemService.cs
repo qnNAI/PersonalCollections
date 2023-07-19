@@ -22,6 +22,7 @@ namespace Application.Common.Contracts.Services
         Task<RemoveItemResponse> RemoveAsync(string itemId);
         Task<ItemDto?> GetByIdAsync(string itemId);
         Task<IEnumerable<TagDto>> GetLargestTags(int pageSize, CancellationToken cancellationToken);
+        Task<IEnumerable<ItemDto>> GetItemsByTagId(string tagId, int page, int pageSize, CancellationToken cancellationToken);
 
         Task<bool> AddLikeAsync(string userId, string itemId);
         Task<bool> RemoveLikeAsync(string userId, string itemId);
