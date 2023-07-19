@@ -54,7 +54,7 @@ namespace PersonalCollections.Controllers
         [HttpGet]
         [Authorize]
         [AuthorFilter]
-        public async Task<IActionResult> EditCollection([FromQuery] string userId, [FromQuery] string collectionId)
+        public async Task<IActionResult> EditCollection([FromQuery] string collectionId)
         {
             var collection = await _collectionService.GetByIdAsync(collectionId);
             if (collection is null)

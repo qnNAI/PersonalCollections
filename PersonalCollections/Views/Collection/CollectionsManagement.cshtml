@@ -36,7 +36,7 @@
     <div class="mt-4 mb-5">
         @foreach(var collection in Model.Collections)
         {
-            <div class="card w-75 mt-4" id="@collection.Id">
+            <div class="card col-12 col-md-8 mt-4" id="@collection.Id">
                 <div class="card-header alert alert-primary d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">@collection.Name</h5>
                     @if(isAuthor)

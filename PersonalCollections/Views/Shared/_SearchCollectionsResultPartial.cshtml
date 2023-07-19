@@ -3,14 +3,14 @@
 
 @foreach(var collection in Model)
 {
-    <div class="row d-flex flex-row align-items-center mt-4 border border-secondary p-3 border-round item-pane col-12 col-md-8">
+    <div class="row d-flex flex-column flex-md-row align-content-start align-items-center mt-4 border border-secondary p-3 border-round item-pane col-12 col-md-8">
 
-        <h5 class="col-5">@collection.Name</h5>
-        <div class="col-5">
+        <h5 class="col-12 col-md-5">@collection.Name</h5>
+        <div class="col-12 col-md-5 mt-3 mt-md-0">
             <div>Author</div>
             <a href="@Url.Action("CollectionsManagement", "Collection", new { collection.UserId })" class="link-underline link-underline-opacity-0">@collection.Author.UserName</a>
         </div>
-        <div class="col-2 d-flex justify-content-center">
+        <div class="col-12 col-md-2 d-flex justify-content-md-center mt-3 mt-md-0">
             <a class="btn btn-primary" href="@Url.Action("Collection", "Collection", new { collectionId = collection.Id })">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right ms-1 mb-1" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z" />

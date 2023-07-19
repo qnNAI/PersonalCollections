@@ -155,6 +155,8 @@ namespace Application.Services
             var items = await context.Items.AsNoTracking()
                 .OrderByDescending(x => x.CreationDate)
                 .Take(pageSize)
+                .Include(x => x.Collection)
+                    .ThenInclude(x => x.User)
                 .ToListAsync(cancellationToken);
 
             return items.Adapt<List<ItemDto>>();

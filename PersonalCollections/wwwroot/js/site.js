@@ -461,7 +461,7 @@ function sendComment() {
     let textArea = document.getElementById('comment-text');
     let text = textArea.value;
     let itemId = document.getElementById('item-id').value;
-    debugger;
+
     hubConnection.invoke('Comment', {
         text,
         itemId
