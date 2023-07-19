@@ -168,7 +168,9 @@ namespace Application.Services
 
         public async Task<IEnumerable<CollectionDto>> GetCollectionsAsync(string term, int page, int pageSize, CancellationToken cancellationToken) 
         {
-            var collections = await _context.Collections.AsNoTracking()
+            using var context = _context.CreateContext();
+
+            var collections = await context.Collections.AsNoTracking()
                 .Where(x => EF.Functions.Contains(x.Name, term) || EF.Functions.Contains(x.Description, term))
                 .Include(x => x.User)
                 .Skip((page - 1) * pageSize)
@@ -187,6 +189,19 @@ namespace Application.Services
                 .FirstOrDefaultAsync(x => x.Id == id))
                 ?.Adapt<CollectionDto>();
             return collection;
+        }
+
+        public async Task<IEnumerable<CollectionDto>> GetLargestCollectionsAsync(int pageSize, CancellationToken cancellationToken)
+        {
+            using var context = _context.CreateContext();
+
+            var collections = await context.Collections.AsNoTracking()
+                .OrderByDescending(x => x.Items.Count)
+                .Take(pageSize)
+                .Include(x => x.User)
+                .ToListAsync(cancellationToken);
+
+            return collections.Adapt<List<CollectionDto>>();
         }
     }
 }

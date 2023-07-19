@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Application.Common.Contracts.Contexts
 {
-	public interface IApplicationDbContext
+	public interface IApplicationDbContext : IDisposable
 	{
         DbSet<ApplicationUser> Users { get; set; }
 
@@ -28,5 +28,7 @@ namespace Application.Common.Contracts.Contexts
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         EntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class;
+
+        IApplicationDbContext CreateContext();
     }
 }

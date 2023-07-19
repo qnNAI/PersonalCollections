@@ -15,5 +15,6 @@ namespace Application.Common.Contracts.Services
         Task<IEnumerable<CollectionDto>> GetCollectionsAsync(string userId);
         Task<IEnumerable<CollectionDto>> GetCollectionsAsync(string term, int page, int pageSize, CancellationToken cancellationToken);
         Task<CollectionDto?> GetByIdAsync(string id);
+        Task<IEnumerable<CollectionDto>> GetLargestCollectionsAsync(int pageSize, CancellationToken cancellationToken);
     }
 }

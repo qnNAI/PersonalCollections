@@ -130,10 +130,12 @@ namespace Application.Services
 
         public async Task<IEnumerable<ItemDto>> GetItemsAsync(string term, int page, int pageSize, CancellationToken cancellationToken)
         {
-            var items = await _context.Items.AsNoTracking()
+            using var context = _context.CreateContext();
+
+            var items = await context.Items.AsNoTracking()
                 .Where(x => EF.Functions.Contains(x.Name, term))
                 .Include(x => x.Comments)
-                .Union(_context.Items.AsNoTracking()
+                .Union(context.Items.AsNoTracking()
                     .Include(x => x.Comments)
                     .Where(x => x.Comments.Any(c => EF.Functions.Contains(c.Text, term))))
                 .OrderBy(x => x.Name)
@@ -148,7 +150,9 @@ namespace Application.Services
 
         public async Task<IEnumerable<ItemDto>> GetLatestItemsAsync(int pageSize, CancellationToken cancellationToken)
         {
-            var items = await _context.Items.AsNoTracking()
+            using var context = _context.CreateContext();
+
+            var items = await context.Items.AsNoTracking()
                 .OrderByDescending(x => x.CreationDate)
                 .Take(pageSize)
                 .ToListAsync(cancellationToken);
@@ -291,6 +295,18 @@ namespace Application.Services
             };
         }
 
+        public async Task<IEnumerable<TagDto>> GetLargestTags(int pageSize, CancellationToken cancellationToken)
+        {
+            using var context = _context.CreateContext();
+
+            var tags = await context.Tags.AsNoTracking()
+                .OrderByDescending(x => x.Items.Count)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+
+            return tags.Adapt<List<TagDto>>();
+        }
+
         private async Task PrepareTagsAsync(Item item)
         {
             var tagNames = item.Tags.Select(x => x.Name);
@@ -322,7 +338,10 @@ namespace Application.Services
         {
             foreach(var tag in item.Tags)
             {
-                tag.Name = tag.Name.ToLower();
+                tag.Name = tag.Name
+                    .ToLower()
+                    .Replace("/", "")
+                    .Replace(" ", "");
             }
         }
 

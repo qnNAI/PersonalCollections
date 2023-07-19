@@ -1,4 +1,5 @@
 ﻿using Application.Common.Contracts.Services;
+using Application.Models.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PersonalCollections.Models;
@@ -21,9 +22,16 @@ namespace PersonalCollections.Controllers
 
 		public async Task<IActionResult> Index(CancellationToken cancellationToken = default)
 		{
-			var items = await _itemService.GetLatestItemsAsync(pageSize: 10, cancellationToken);
+			var itemsTask = _itemService.GetLatestItemsAsync(pageSize: 10, cancellationToken);
+			var collectionsTask = _collectionService.GetLargestCollectionsAsync(pageSize: 5, cancellationToken);
+			var tagsTask = _itemService.GetLargestTags(pageSize: 20, cancellationToken);
 
-			return View();
+			return View(new MainPageResponse
+			{
+				Items = await itemsTask,
+				Collections = await collectionsTask,
+				Tags = await tagsTask
+            });
 		}
 	}
 }

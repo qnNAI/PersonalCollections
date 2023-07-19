@@ -167,14 +167,14 @@ namespace PersonalCollections.Controllers
             {
                 return View(new SearchItemsResponse());
             }
-            var items = await _itemService.GetItemsAsync(term, page: 1, pageSize, cancellationToken);
-            var collections = await _collectionService.GetCollectionsAsync(term, page: 1, pageSize, cancellationToken);
+            var itemsTask = _itemService.GetItemsAsync(term, page: 1, pageSize, cancellationToken);
+            var collectionsTask = _collectionService.GetCollectionsAsync(term, page: 1, pageSize, cancellationToken);
 
             return View(new SearchItemsResponse
             {
                 Term = term,
-                Items = items,
-                Collections = collections
+                Items = await itemsTask,
+                Collections = await collectionsTask
             });
         }
 

@@ -18,10 +18,12 @@ namespace Infrastructure.Persistence.Contexts
 {
 	internal class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
 	{
+        private readonly DbContextOptions<ApplicationDbContext> _options;
         private readonly CollectionTypes _typeMapping;
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, CollectionTypes typeMapping) : base(options)
         {
+            _options = options;
             _typeMapping = typeMapping;
         }
 
@@ -163,5 +165,7 @@ namespace Infrastructure.Persistence.Contexts
                     }
                 );
         }
+
+        public IApplicationDbContext CreateContext() => new ApplicationDbContext(_options, _typeMapping);
     }
 }
