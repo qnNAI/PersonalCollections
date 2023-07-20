@@ -38,7 +38,10 @@ namespace PersonalCollections.Middleware
             {
                 await context.ForbidAsync();
                 await signInManager.SignOutAsync();
-                logger.LogWarning("Unauthorized attempt to access resourses: inactive user - {userId}", user.Id);
+                if (user is not null)
+                {
+                    logger.LogWarning("Unauthorized attempt to access resourses: inactive user - {userId}", user.Id);
+                }
                 return;
             }
 
