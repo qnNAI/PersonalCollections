@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 
 namespace PersonalCollections.Controllers {
 
@@ -18,17 +19,20 @@ namespace PersonalCollections.Controllers {
 		private readonly UserManager<ApplicationUser> _userManager;
         private readonly IIdentityService _identityService;
         private readonly IEmailService _emailService;
+        private readonly IStringLocalizer<IdentityController> _localizer;
 
         public IdentityController(
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
             IIdentityService identityService,
-            IEmailService emailService)
+            IEmailService emailService,
+            IStringLocalizer<IdentityController> localizer)
         {
 			_signInManager = signInManager;
 			_userManager = userManager;
             _identityService = identityService;
             _emailService = emailService;
+            _localizer = localizer;
         }
 
         #region Authentication
@@ -45,15 +49,16 @@ namespace PersonalCollections.Controllers {
                 return View(request);
             }
 
-            var result = await _signInManager.PasswordSignInAsync(request.Username, request.Password, isPersistent: true, lockoutOnFailure: false);
+            var existing = await _userManager.FindByEmailAsync(request.Login);
+            var result = await _signInManager.PasswordSignInAsync(existing is null ? request.Login : existing.UserName!, request.Password, isPersistent: true, lockoutOnFailure: false);
 
             if (result.IsNotAllowed) {
-                ModelState.AddModelError("", "Authentication failed. User is locked!");
+                ModelState.AddModelError("", _localizer["UserLocked"].Value);
                 return View(request);
             }
 
             if(!result.Succeeded) {
-                ModelState.AddModelError("", "Authentication failed!");
+                ModelState.AddModelError("", _localizer["AuthFailed"].Value);
                 return View(request);
             }
 
@@ -71,7 +76,7 @@ namespace PersonalCollections.Controllers {
         public async Task<IActionResult> SignUp(SignUpRequest request) {
             var result = await _identityService.SignUpAsync(request);
             if(!result.Succeeded) {
-                ModelState.AddModelError("", "Registration failed!");
+                ModelState.AddModelError("", _localizer["SignUpFailed"]);
                 _AddModelErrors(result);
                 return View(request);
             }
@@ -112,7 +117,7 @@ namespace PersonalCollections.Controllers {
                 return View("Error", new[] {
                     new IdentityError {
                         Code = "ExternalAuthFailed",
-                        Description = "Failed to authenticate with External service"
+                        Description = _localizer["ExternalAuthFailed"].Value
                     }
                 });
             }
@@ -126,7 +131,7 @@ namespace PersonalCollections.Controllers {
                 return View("Error", new[] {
                     new IdentityError {
                         Code = "ExternalAuthFailed",
-                        Description = "Failed to authenticate: user is locked!"
+                        Description = _localizer["UserLocked"].Value
                     }
                 });
             }
@@ -141,7 +146,7 @@ namespace PersonalCollections.Controllers {
         public async Task<IActionResult> ExternalLogin(ExternalLoginModel model) {
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if(info == null) {
-                ModelState.AddModelError("", "Failed to authenticate with external service!");
+                ModelState.AddModelError("", _localizer["ExternalAuthFailed"].Value);
                 return View(model);
             }
 
@@ -149,7 +154,7 @@ namespace PersonalCollections.Controllers {
             IdentityResult result;
 
             if(user != null) {
-                ModelState.AddModelError("", "Failed to authenticate with external service. Email already taken!");
+                ModelState.AddModelError("", _localizer["AuthFailedEmailTaken"].Value);
                 return View(model);
             } else {
                 user = new ApplicationUser {

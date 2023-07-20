@@ -1,9 +1,11 @@
-﻿@{
-    ViewData["Title"] = "User Management";
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer;
+@inject Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> sharedLocalizer;
+@{
+    ViewData["Title"] = localizer["UserManagement"];
 }
 
 
-<h3 class="mb-5 mt-4">User management</h3>
+<h3 class="mb-5 mt-4">@localizer["UserManagement"]</h3>
 
 <partial name="_ManageButtons" />
 
@@ -12,21 +14,28 @@
         <thead class="table-dark">
             <tr>
                 <th><input type="checkbox" id="headCheckbox" onchange="headCheckboxChanged(this)" /></th>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Registration date</th>
-                <th>Status</th>
-                <th>Roles</th>
+                <th>@localizer["Username"]</th>
+                <th>@localizer["Email"]</th>
+                <th>@localizer["RegDate"]</th>
+                <th>@localizer["Status"]</th>
+                <th>@localizer["Roles"]</th>
+                <th></th>
             </tr>
         </thead>
         <tbody class="table-group-divider" id="tBody">
         </tbody>
     </table>
 
+    <div class="d-flex flex-row justify-content-center w-100 mb-5">
+        <div class="spinner-border text-success" role="status" id="loader">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
     <nav>
         <ul class="pagination">
             <li class="page-item" id="prevBtn">
-                <a class="page-link" onclick="loadPrevPage('@Url.Action("Users")')" href="#">Previous</a>
+                <a class="page-link" onclick="loadPrevPage('@Url.Action("Users")')" href="#">@sharedLocalizer["Previous"]</a>
             </li>
             <li class="page-item">
                 <a class="page-link">
@@ -34,16 +43,11 @@
                 </a>
             </li>
             <li class="page-item" id="nextBtn">
-                <a class="page-link" onclick="loadNextPage('@Url.Action("Users")')" href="#">Next</a>
+                <a class="page-link" onclick="loadNextPage('@Url.Action("Users")')" href="#">@sharedLocalizer["Next"]</a>
             </li>
         </ul>
     </nav>
-
-    <div class="d-flex flex-row justify-content-center w-100 mb-5">
-        <div class="spinner-border text-success" role="status" id="loader">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-    </div>
+   
 </div>
 
 <script>

@@ -12,7 +12,7 @@ namespace Application.Models.Identity {
         public ResetPasswordRequestValidator()
         {
             RuleFor(x => x.Password).NotEmpty();
-            RuleFor(x => x.PasswordConfirm).NotEmpty().Equal(x => x.Password).WithMessage("Passwords do not match");
+            RuleFor(x => x.PasswordConfirm).NotEmpty().Equal(x => x.Password);
 
             RuleFor(x => x.Email).NotEmpty().EmailAddress();
             RuleFor(x => x.Token).NotEmpty();

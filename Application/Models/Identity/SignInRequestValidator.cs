@@ -11,7 +11,7 @@ namespace Application.Models.Identity
 	{
 		public SignInRequestValidator()
 		{
-			RuleFor(x => x.Username).NotEmpty();
+			RuleFor(x => x.Login).NotEmpty();
 			RuleFor(x => x.Password).NotEmpty();
 		}
 	}

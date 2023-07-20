@@ -1,0 +1,85 @@
+﻿@using Application.Common.Contracts.Contexts;
+@using Application.Helpers;
+@using Application.Models.Collection;
+@using Microsoft.EntityFrameworkCore;
+@model AddCollectionRequest;
+@inject CollectionTypes typeMapping;
+@inject IApplicationDbContext context;
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer;
+@inject Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> sharedLocalizer;
+
+@{
+    ViewData["Title"] = localizer["AddCollection"];
+}
+
+<h3 class="mt-5">@localizer["CollectionCreation"]</h3>
+
+<div class="mt-5 row mb-5">
+    <div class="col-lg-4 col-md-6">
+        <form asp-action="AddCollection" enctype="multipart/form-data">
+            <div id="drop-area" class="mb-3 border border-primary d-flex justify-content-center align-items-center">
+                <img id="image-preview" class="d-none"/>
+                <span id="drop-area-text" class="text-center">@localizer["DragImage"]</span>
+            </div>
+            <input asp-for="Image" type="file" class="form-control mb-3" accept="image/*" id="file-input" />
+            <input asp-for="UserId" value="@Model.UserId" type="hidden" />
+
+            <div asp-validation-summary="ModelOnly" class="validation text-danger"></div>
+            <div class="form-group mb-3">
+                <label asp-for="Name" class="form-label">@sharedLocalizer["Name"]</label>
+                <input asp-for="Name" class="form-control" type="text" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Description" class="form-label">@sharedLocalizer["Description"]</label>
+                <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <label class="form-label">@sharedLocalizer["Theme"]</label>
+            <select name="CollectionThemeId" class="form-select mb-3">
+                @foreach(var theme in await context.CollectionThemes.ToListAsync())
+                {
+                    <option value="@theme.Id">@sharedLocalizer[$"{theme.Name}"]</option>
+                }
+            </select>
+
+            <label class="form-label">@sharedLocalizer["Fields"]</label>
+            <div class="" id="fields">
+            </div>
+            <span asp-validation-for="Fields" class="text-danger"></span>
+
+            <div class="input-group mb-3 mt-3">
+                <select class="form-select" id="type-select">
+                    @foreach(var type in await context.CollectionFieldTypes.ToListAsync())
+                    {
+                        <option value="@type.Id">@sharedLocalizer[$"{type.Name}"]</option>
+                    }
+                </select>
+                <button type="button" class="btn btn-success" onclick="addField()">@localizer["AddField"]</button>
+            </div>
+
+            <div class="mt-4 form-group">
+                <input type="submit" value="@localizer["Create"]" class="btn btn-primary" onclick="arrangeTypes()" />
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+
+<script>
+    let counter = 0;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        setupFileInput();
+
+    }, false);
+
+</script>
+
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

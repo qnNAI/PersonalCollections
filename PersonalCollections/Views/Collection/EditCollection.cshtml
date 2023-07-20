@@ -1,0 +1,112 @@
+﻿@using Application.Common.Contracts.Contexts;
+@using Application.Helpers;
+@using Application.Models.Collection;
+@using Microsoft.EntityFrameworkCore;
+@model EditCollectionRequest;
+@inject CollectionTypes typeMapping;
+@inject IApplicationDbContext context;
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer;
+@inject Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> sharedLocalizer;
+
+@{
+    ViewData["Title"] = localizer["EditCollection"];
+    var fieldCounter = 0;
+}
+
+<h3 class="mt-5">@localizer["EditCollection"]</h3>
+
+<div class="mt-5 row mb-5">
+    <div class="col-lg-4 col-md-6">
+        <form asp-action="EditCollection" enctype="multipart/form-data">
+            <div id="drop-area" class="mb-3 border border-primary d-flex justify-content-center align-items-center">
+                @if(string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <img id="image-preview" class="d-none" />
+                    <span id="drop-area-text" class="text-center">@localizer["DragImage"]</span>
+                } 
+                else
+                {
+                    <img id="image-preview" src="@Model.ImageUrl" />
+                    <span id="drop-area-text" class="d-none text-center">@localizer["DragImage"]</span>
+                }
+            </div>
+            <input asp-for="Image" type="file" class="form-control mb-3" accept="image/*" id="file-input" />
+            <input asp-for="UserId" value="@Model.UserId" type="hidden" />
+            <input asp-for="Id" value="@Model.Id" type="hidden" />
+
+            <div asp-validation-summary="ModelOnly" class="validation text-danger"></div>
+            <div class="form-group mb-3">
+                <label asp-for="Name" class="form-label">@sharedLocalizer["Name"]</label>
+                <input asp-for="Name" class="form-control" type="text" value="@Model.Name"/>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Description" class="form-label">@sharedLocalizer["Description"]</label>
+                <textarea asp-for="Description" class="form-control" value="@Model.Description" rows="5"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <label class="form-label">@sharedLocalizer["Theme"]</label>
+            <select name="CollectionThemeId" class="form-select mb-3">
+                @foreach(var theme in await context.CollectionThemes.ToListAsync())
+                {
+                    if(Model.CollectionThemeId == theme.Id)
+                    {
+                        <option selected value="@theme.Id">@sharedLocalizer[$"{theme.Name}"]</option>
+                    }
+                    else
+                    {
+                        <option value="@theme.Id">@sharedLocalizer[$"{theme.Name}"]</option>
+                    }
+                }
+            </select>
+
+            <label class="form-label">@sharedLocalizer["Fields"]</label>
+            <div class="" id="fields">
+                @foreach(var field in Model.Fields)
+                {
+                    <div class="input-group mb-3">
+                        <input asp-for="Fields[fieldCounter].Id" value="@field.Id" type="hidden"/>
+                        <input type="text" placeholder="..." value="@field.Name" name="Fields[@fieldCounter].Name" readonly class="form-control">
+                        <span class="input-group-text">@sharedLocalizer[$"{field.FieldType.Name}"]</span>
+                    </div>
+                    fieldCounter++;
+                }
+
+            </div>
+            <span asp-validation-for="Fields" class="text-danger"></span>
+
+            <div class="input-group mb-3 mt-3">
+                <select class="form-select" id="type-select">
+                    @foreach(var type in await context.CollectionFieldTypes.ToListAsync())
+                    {
+                        <option value="@type.Id">@sharedLocalizer[$"{type.Name}"]</option>
+                    }
+                </select>
+                <button type="button" class="btn btn-success" onclick="addFullField()">@localizer["AddField"]</button>
+            </div>
+
+            <div class="mt-4 form-group">
+                <input type="submit" value="@localizer["Save"]" class="btn btn-primary" onclick="arrangeTypesStartWith(@fieldCounter)" />
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+
+<script>
+    let counter = 0;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        setupFileInput();
+
+    }, false);
+
+</script>
+
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

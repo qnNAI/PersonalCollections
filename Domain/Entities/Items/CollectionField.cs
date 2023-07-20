@@ -10,13 +10,16 @@ namespace Domain.Entities.Items {
     public class CollectionField : Entity {
 
         public string CollectionId { get; set; } = null!;
-        public string ItemFieldTypeId { get; set; } = null!;
+        public string CollectionFieldTypeId { get; set; } = null!;
         public string Name { get; set; } = null!;
+        public long Order { get; set; }
 
         [ForeignKey(nameof(CollectionId))]
         public Collection Collection { get; set; } = null!;
 
-        [ForeignKey(nameof(ItemFieldTypeId))]
-        public ItemFieldType ItemFieldType { get; set; } = null!;
+        [ForeignKey(nameof(CollectionFieldTypeId))]
+        public CollectionFieldType FieldType { get; set; } = null!;
+        
+        public ICollection<ItemField> ItemFields { get; set; } = new List<ItemField>();
     }
 }

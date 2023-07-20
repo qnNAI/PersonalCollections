@@ -13,6 +13,8 @@ namespace Domain.Entities.Identity
 		public bool IsActive { get; set; } = true;
 		public DateTime RegistrationDate { get; set; }
 
-		//public ICollection<Collection>? Collections { get; set; }
-	}
+		public ICollection<Collection> Collections { get; set; } = new List<Collection>();
+        public ICollection<Like> Likes { get; set; } = new List<Like>();
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+    }
 }

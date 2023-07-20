@@ -1,0 +1,161 @@
+﻿@using Application.Helpers;
+@using Application.Models.Collection;
+@using Markdig;
+@using System.Security.Claims;
+@model CollectionDto
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer;
+@inject Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> sharedLocalizer;
+
+@{
+    ViewData["Title"] = sharedLocalizer["Collection"];
+    var mdPipeline = new MarkdownPipelineBuilder()
+        .UseAdvancedExtensions()
+        .UseBootstrap()
+        .UseCitations()
+        .UseAbbreviations()
+        .UseDefinitionLists()
+        .UseEmojiAndSmiley()
+        .UseFigures()
+        .UseFooters()
+        .Build();
+    var isAuthor = (User.Identity?.IsAuthenticated ?? false) && (User.IsInRole("Admin") || User.FindFirstValue(ClaimTypes.NameIdentifier) == Model.UserId);
+}
+
+<h3 class="mb-5 mt-5">
+    @Model.Name
+    @if(isAuthor)
+    {
+        <a href="@Url.Action("EditCollection", "Collection", new { userId = Model.Author.Id, collectionId = Model.Id })" class="btn btn-warning ms-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square mb-1" viewBox="0 0 16 16">
+                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
+            </svg>
+        </a>
+    }
+</h3>
+
+@if(!string.IsNullOrEmpty(Model.ImageUrl)) {
+    <div class="row mb-3">
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="collection-img-container">
+                <img src="@Model.ImageUrl" class="collection-img border border-primary" />
+            </div>
+        </div>
+    </div>
+  
+}
+
+<div class="mb-2 row">
+    <label asp-for="Theme" class="col-2 col-lg-1 col-form-label">@sharedLocalizer["Theme"]</label>
+    <div class="col-5">
+        <input type="text" readonly class="form-control-plaintext" value="@Model.Theme.Name">
+    </div>
+</div>
+
+<div class="mb-2 row">
+    <label asp-for="Author" class="col-2 col-lg-1 col-form-label">@sharedLocalizer["Author"]</label>
+    <div class="col-5">
+        <input type="text" readonly class="form-control-plaintext" value="@Model.Author.UserName">
+    </div>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Description" class="col-12 col-form-label">@sharedLocalizer["Description"]</label>
+    <div class="col-12 col-lg-5 alert alert-secondary">
+        @Html.Raw(Markdown.ToHtml(@Model.Description, mdPipeline))
+    </div>
+</div>
+
+<div class="d-flex flex-row mb-3 mt-5 gap-2 align-items-start">
+    <select class="form-select w-auto" id="order-select" onchange="loadItems('@Url.Action("Items", "Item")', '@Model.Id', 1)">
+        <option selected value="asc">@localizer["Ascending"]</option>
+        <option value="desc">@localizer["Descending"]</option>
+    </select>
+
+    <div class="d-flex" role="search">
+        <input class="form-control me-2" type="search" placeholder="..." id="filter" aria-label="Search">
+        <button class="btn btn-outline-success" type="button" onclick="loadItems('@Url.Action("Items", "Item")', '@Model.Id', 1)">@sharedLocalizer["Search"]</button>
+    </div>
+</div>
+
+
+@foreach(var field in Model.Fields.Where(x => x.FieldType.Name == CollectionTypes.DATE))
+{
+    <div class="row mb-3">
+        <label for="date-@field.Id" class="col-form-label col-2 col-lg-1">@field.Name</label>
+        <div class="col-5 col-lg-2">
+            <input type="date" id="date-@field.Id" class="form-control" />
+        </div>
+    </div>
+}
+@if(isAuthor)
+{
+    <div class="mt-4 mb-3">
+        <a class="btn btn-success" href="@Url.Action("AddItem", "Item", new { collectionId = Model.Id })">
+            @sharedLocalizer["New"]
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle ms-1 mb-1" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+            </svg>
+        </a>
+    </div>
+}
+
+
+<div class="mb-5 table-responsive">
+
+    <table class="table table-hover table-striped" id="itemsTable">
+        <thead class="table-dark">
+            <tr>
+                @if(User.Identity?.IsAuthenticated ?? false)
+                {
+                    <th></th>
+                }
+                <th>@sharedLocalizer["Name"]</th>
+                <th>@sharedLocalizer["Tags"]</th>
+                @foreach(var field in Model.Fields
+                    .Where(x => x.FieldType.Name == CollectionTypes.STRING || x.FieldType.Name == CollectionTypes.DATE)
+                    .OrderBy(x => x.Order)) 
+                {
+                    <th class="d-none d-lg-table-cell">@field.Name</th>
+                }
+                <th class="d-table-cell d-lg-none"></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody class="table-group-divider" id="tBody">
+        </tbody>
+    </table>
+
+    <div class="d-flex flex-row justify-content-center w-100">
+        <div class="spinner-border text-success" role="status" id="loader">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <nav>
+        <ul class="pagination">
+            <li class="page-item" id="prevBtn">
+                <a class="page-link" onclick="loadPrevItemsPage('@Url.Action("Items", "Item")', '@Model.Id')" href="#">@sharedLocalizer["Previous"]</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link">
+                    <span id="currentPage"></span> / <span id="totalPages"></span>
+                </a>
+            </li>
+            <li class="page-item" id="nextBtn">
+                <a class="page-link" onclick="loadNextItemsPage('@Url.Action("Items", "Item")', '@Model.Id')" href="#">@sharedLocalizer["Next"]</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        loadItems('@Url.Action("Items", "Item")', '@Model.Id', 1);
+
+    }, false);
+</script>

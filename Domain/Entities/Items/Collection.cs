@@ -13,6 +13,8 @@ namespace Domain.Entities.Items {
         public string Name { get; set; } = null!;
         public string Description { get; set; } = null!;
         public string? ImageUrl { get; set; }
+        public string? ImageName { get; set; }
+        public DateTime CreationDate { get; set; }
 
         public string CollectionThemeId { get; set; } = null!;
         public string UserId { get; set; } = null!;
@@ -23,6 +25,7 @@ namespace Domain.Entities.Items {
         [ForeignKey(nameof(UserId))]
         public ApplicationUser User { get; set; } = null!;
 
-        public ICollection<Item>? Items { get; set; }
+        public List<Item> Items { get; set; } = new List<Item>();
+        public List<CollectionField> Fields { get; set; } = new List<CollectionField>();
     }
 }

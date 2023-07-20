@@ -1,0 +1,15 @@
+﻿@using Application.Models.Item;
+@model IEnumerable<CommentDto>;
+
+@foreach(var comment in Model) 
+{
+    <div class="col-12 col-lg-6 border-bottom pb-1 mb-3">
+        <a class="link-underline link-underline-opacity-0" href="@Url.Action("CollectionsManagement", "Collection", new { userId = comment.UserId })">@comment.Author.UserName</a>
+        <p class="text-muted small mb-2">
+            @(comment.SentTime.ToLocalTime().ToShortDateString() + " " + comment.SentTime.ToLocalTime().ToShortTimeString())
+        </p>
+        <span>
+            @comment.Text
+        </span>
+    </div>
+}

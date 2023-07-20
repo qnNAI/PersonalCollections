@@ -13,6 +13,7 @@ using Application.Common.Contracts.Services;
 using Application.Services;
 using Microsoft.Extensions.Configuration;
 using Application.Models.Email;
+using Application.Helpers;
 
 namespace Application
 {
@@ -21,12 +22,15 @@ namespace Application
 
         public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration) {
             var config = TypeAdapterConfig.GlobalSettings;
+            ValidatorOptions.Global.LanguageManager = new AppLanguageManager();
             MappingProfile.ApplyMappings();
 
             services.AddSingleton(config);
             services.AddScoped<IMapper, Mapper>();
 
             services.AddScoped<IIdentityService, IdentityService>();
+            services.AddScoped<ICollectionService, CollectionService>();
+            services.AddScoped<IItemService, ItemService>();
 
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
@@ -35,6 +39,8 @@ namespace Application
                .Get<EmailConfiguration>();
 
             services.AddSingleton(emailConfig);
+
+            services.AddSingleton<CollectionTypes>();
 
             return services;
         }

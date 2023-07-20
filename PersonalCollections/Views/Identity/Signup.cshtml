@@ -1,38 +1,38 @@
 ﻿@model Application.Models.Identity.SignUpRequest;
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer;
+@inject Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> sharedLocalizer;
 
 @{
-    ViewData["Title"] = "Sign up";
+    ViewData["Title"] = sharedLocalizer["SignUp"];
 }
 
 <div class="container mt-5">
     <form asp-antiforgery="true" asp-action="Signup" asp-controller="Identity" method="post">
-    <div>
-        <div class="validation text-danger" asp-validation-summary="ModelOnly"></div>
-            <div class="form-floating">
-                <input asp-for="Email" class="form-control" autocomplete="email" aria-required="true" placeholder="name@example.com" type="email" />
-                <label asp-for="Email">Email</label>
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-floating">
-                <input asp-for="Username" class="form-control" autocomplete="username" aria-required="true" placeholder="JohnDoe" type="text" />
-                <label asp-for="Username">Username</label>
-                <span asp-validation-for="Username" class="text-danger"></span>
-            </div>
-            <div class="form-floating">
-                <input asp-for="Password" class="form-control" autocomplete="current-password" aria-required="true" type="password" placeholder="password" />
-                <label asp-for="Password">Password</label>
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="mb-4 d-flex flex-row justify-content-between">
-                <input type="submit" value="Sign up" class="btn btn-primary mb-0"/>
-                <a asp-action="SignIn" class="btn btn-success ms-2">Sign in</a>
-            </div>
-            <partial name="_SocialButtonsPartial" />
-    </div>
-</form>
-
+        <div>
+            <div class="validation text-danger" asp-validation-summary="ModelOnly"></div>
+                <div class="form-floating">
+                    <input asp-for="Email" class="form-control" autocomplete="email" aria-required="true" placeholder="name@example.com" type="email" />
+                    <label asp-for="Email">Email</label>
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="form-floating">
+                    <input asp-for="Username" class="form-control" autocomplete="username" aria-required="true" placeholder="JohnDoe" type="text" />
+                    <label asp-for="Username">@sharedLocalizer["Username"]</label>
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+                <div class="form-floating">
+                    <input asp-for="Password" class="form-control" autocomplete="current-password" aria-required="true" type="password" placeholder="password" />
+                    <label asp-for="Password">@sharedLocalizer["Password"]</label>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="mb-4 d-flex flex-row justify-content-between">
+                    <input type="submit" value="@sharedLocalizer["SignUp"]" class="btn btn-primary mb-0" />
+                    <a asp-action="SignIn" class="btn btn-success ms-2">@sharedLocalizer["SignIn"]</a>
+                </div>
+                <partial name="_SocialButtonsPartial" />
+        </div>
+    </form>
 </div>
-
 
 @section scripts {
     <partial name="_ValidationScriptsPartial" />

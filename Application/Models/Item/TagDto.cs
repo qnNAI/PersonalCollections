@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Entities.Items {
-
-    public class ItemFieldType : Entity {
-
+namespace Application.Models.Item
+{
+    public class TagDto
+    {
+        public string Id { get; set; }
         public string Name { get; set; } = null!;
     }
 }

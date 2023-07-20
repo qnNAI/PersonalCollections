@@ -1,0 +1,92 @@
+﻿@using Application.Helpers;
+@using Application.Models.Item;
+@model AddItemRequest;
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer;
+@inject Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> sharedLocalizer;
+
+@{
+    ViewData["Title"] = localizer["AddItem"];
+    var fieldCounter = 0;
+}
+
+<h3 class="mt-5">@localizer["ItemCreation"]</h3>
+
+<div class="mt-5 row mb-5">
+    <div class="col-lg-4 col-md-6">
+        <form asp-action="AddItem" id="add-item-form">
+            <div asp-validation-summary="ModelOnly" class="validation text-danger"></div>
+            <div class="form-group mb-3">
+                <label asp-for="Name" class="form-label">@sharedLocalizer["Name"]</label>
+                <input asp-for="Name" class="form-control" type="text" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <input asp-for="CollectionId" value="@Model.CollectionId" type="hidden" />
+            @foreach(var field in Model.Fields.OrderBy(x => x.CollectionField.Order))
+            {
+                <div class="form-group mb-3">
+                    @if(field.CollectionField.FieldType.Name == CollectionTypes.BOOL)
+                    {
+                        <div class="form-check">
+                            <input asp-for="Fields[fieldCounter].Value" type="checkbox" class="form-check-input" />
+                            <label asp-for="Fields[fieldCounter].Value" class=" form-check-label">@field.CollectionField.Name</label>
+                        </div>
+                    } 
+                    else
+                    {
+                        <label asp-for="Fields[fieldCounter].Value" class="form-label">@field.CollectionField.Name</label>
+                        @switch(field.CollectionField.FieldType.Name)
+                        {
+                            case CollectionTypes.DATE:
+                                <input asp-for="Fields[fieldCounter].Value" type="date" class="form-control" />
+                                break;
+                            case CollectionTypes.INTEGER_NUMBER:
+                                <input asp-for="Fields[fieldCounter].Value" type="number" oninput="this.value = Math.round(this.value);" class="form-control" placeholder="123">
+                                break;
+                            case CollectionTypes.STRING:
+                                <input asp-for="Fields[fieldCounter].Value" class="form-control" type="text" />
+                                break;
+                            case CollectionTypes.TEXT:
+                                <textarea asp-for="Fields[fieldCounter].Value" class="form-control" rows="5"></textarea>
+                                break;
+                        }
+                    }
+                    
+                    <span asp-validation-for="Fields[fieldCounter].Value" class="text-danger"></span>
+                    <input asp-for="Fields[fieldCounter].CollectionFieldId" type="hidden" value="@field.CollectionField.Id" />
+                    @{ fieldCounter++; } 
+                </div>
+            }
+            <div class="form-group mb-3">
+                <label asp-for="Tags" class="form-label w-100">@sharedLocalizer["Tags"]</label>
+                <input type="text" id="tags-input" data-role="tagsinput" />
+                <span asp-validation-for="Tags" class="text-danger"></span>
+            </div>
+            
+            <div class="mt-4 form-group">
+                <input type="submit" value="@sharedLocalizer["Create"]" class="btn btn-primary" onclick="setTags('add-item-form');" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        $('#tags-input').tagsinput({
+            tagClass: 'badge text-bg-success pb-2',
+        });
+        $('.bootstrap-tagsinput > input').autocomplete({
+            source: '/Item/TagAutocomplete',
+            delay: 200
+        });
+        $('.ui-widget').addClass('list-group');
+
+
+    }, false);
+
+</script>
+
+@section Scripts {
+    <script src="~/lib/bootstrap-tagsinput/js/bootstrap-tagsinput.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+
+}

@@ -93,6 +93,235 @@ namespace Infrastructure.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.Items.Collection", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CollectionThemeId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CollectionThemeId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Collections");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Items.CollectionField", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CollectionFieldTypeId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CollectionId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<long>("Order")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CollectionFieldTypeId");
+
+                    b.HasIndex("CollectionId");
+
+                    b.ToTable("CollectionFields");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Items.CollectionFieldType", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("CollectionFieldTypes");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Items.CollectionTheme", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("CollectionThemes");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Items.Comment", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ItemId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("SentTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Items.Item", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CollectionId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GetUtcDate()");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CollectionId");
+
+                    b.ToTable("Items");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Items.ItemField", b =>
+                {
+                    b.Property<string>("CollectionFieldId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ItemId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Value")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("CollectionFieldId", "ItemId");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("ItemFields");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Items.ItemTag", b =>
+                {
+                    b.Property<string>("ItemId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("TagId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ItemId", "TagId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("ItemTag", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.Items.Like", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ItemId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("UserId", "ItemId");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("Likes");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Items.Tag", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Tags");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -226,6 +455,131 @@ namespace Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.Items.Collection", b =>
+                {
+                    b.HasOne("Domain.Entities.Items.CollectionTheme", "Theme")
+                        .WithMany("Collections")
+                        .HasForeignKey("CollectionThemeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Identity.ApplicationUser", "User")
+                        .WithMany("Collections")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Theme");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Items.CollectionField", b =>
+                {
+                    b.HasOne("Domain.Entities.Items.CollectionFieldType", "FieldType")
+                        .WithMany("Fields")
+                        .HasForeignKey("CollectionFieldTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Items.Collection", "Collection")
+                        .WithMany("Fields")
+                        .HasForeignKey("CollectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Collection");
+
+                    b.Navigation("FieldType");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Items.Comment", b =>
+                {
+                    b.HasOne("Domain.Entities.Items.Item", "Item")
+                        .WithMany("Comments")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Identity.ApplicationUser", "User")
+                        .WithMany("Comments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Items.Item", b =>
+                {
+                    b.HasOne("Domain.Entities.Items.Collection", "Collection")
+                        .WithMany("Items")
+                        .HasForeignKey("CollectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Collection");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Items.ItemField", b =>
+                {
+                    b.HasOne("Domain.Entities.Items.CollectionField", "CollectionField")
+                        .WithMany("ItemFields")
+                        .HasForeignKey("CollectionFieldId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Items.Item", "Item")
+                        .WithMany("Fields")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CollectionField");
+
+                    b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Items.ItemTag", b =>
+                {
+                    b.HasOne("Domain.Entities.Items.Item", "Item")
+                        .WithMany("ItemTags")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Items.Tag", "Tag")
+                        .WithMany("ItemTags")
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("Tag");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Items.Like", b =>
+                {
+                    b.HasOne("Domain.Entities.Items.Item", "Item")
+                        .WithMany("Likes")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Identity.ApplicationUser", "User")
+                        .WithMany("Likes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -275,6 +629,53 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Entities.Identity.ApplicationUser", b =>
+                {
+                    b.Navigation("Collections");
+
+                    b.Navigation("Comments");
+
+                    b.Navigation("Likes");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Items.Collection", b =>
+                {
+                    b.Navigation("Fields");
+
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Items.CollectionField", b =>
+                {
+                    b.Navigation("ItemFields");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Items.CollectionFieldType", b =>
+                {
+                    b.Navigation("Fields");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Items.CollectionTheme", b =>
+                {
+                    b.Navigation("Collections");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Items.Item", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("Fields");
+
+                    b.Navigation("ItemTags");
+
+                    b.Navigation("Likes");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Items.Tag", b =>
+                {
+                    b.Navigation("ItemTags");
                 });
 #pragma warning restore 612, 618
         }

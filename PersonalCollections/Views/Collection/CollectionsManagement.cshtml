@@ -1,0 +1,100 @@
+﻿@using Application.Models.Collection;
+@using Markdig;
+@using System.Security.Claims;
+@model CollectionsManagementResponse;
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer;
+@inject Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> sharedLocalizer;
+
+@{
+    ViewData["Title"] = sharedLocalizer["Collections"];
+    var mdPipeline = new MarkdownPipelineBuilder()
+        .UseAdvancedExtensions()
+        .UseBootstrap()
+        .UseCitations()
+        .UseAbbreviations()
+        .UseDefinitionLists()
+        .UseEmojiAndSmiley()
+        .UseFigures()
+        .UseFooters()
+        .Build();
+
+    var isAuthor = (User.Identity?.IsAuthenticated ?? false) && (User.IsInRole("Admin") || User.FindFirstValue(ClaimTypes.NameIdentifier) == Model.Author.Id);
+}
+
+<h3 class="mt-5">@sharedLocalizer["Collections"]: @Model.Author.UserName</h3>
+<div class="mt-4">
+    @if(isAuthor)
+    {
+        <a class="btn btn-success" href="@Url.Action("AddCollection", "Collection", new { userId = Model.Author.Id })">
+            @sharedLocalizer["New"]
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle ms-1 mb-1" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+            </svg>
+        </a>
+    }
+    <div class="mt-4 mb-5">
+        @foreach(var collection in Model.Collections)
+        {
+            <div class="card col-12 col-md-8 mt-4" id="@collection.Id">
+                <div class="card-header alert alert-primary d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">@collection.Name</h5>
+                    @if(isAuthor)
+                    {
+                        <div>
+                            <a href="@Url.Action("EditCollection", "Collection", new { userId = Model.Author.Id, collectionId = collection.Id })" class="btn btn-warning">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square mb-1" viewBox="0 0 16 16">
+                                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
+                                </svg>
+                            </a>
+                            <button type="button" onclick="removeCollection('@Url.Action("RemoveCollection", "Collection")', '@collection.Id')" class="btn btn-danger">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill mb-1" viewBox="0 0 16 16">
+                                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z" />
+                                </svg>
+                            </button>
+                        </div>
+                    }
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-3 col-12 mb-3">
+                            @if(!string.IsNullOrEmpty(collection.ImageUrl))
+                            {
+                                <div class="collection-img-container">
+                                    <img src="@collection.ImageUrl" class="collection-img border border-primary" />
+                                </div>
+                            }
+                            <div class="alert alert-dark mt-2" role="alert">
+                                <b>@sharedLocalizer[$"{collection.Theme.Name}"]</b>
+                            </div>
+                            <a href="@Url.Action("Collection", "Collection", new { collectionId = collection.Id })" class="btn btn-primary mt-2">
+                                @sharedLocalizer["Items"]
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right ms-1 mb-1" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z" />
+                                    <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z" />
+                                </svg>
+                            </a>
+                        </div>
+                        <div class="col alert alert-secondary">
+                           @Html.Raw(Markdown.ToHtml(@collection.Description, mdPipeline))
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    
+</div>
+
+<div class="toast-container position-fixed bottom-0 start-0 p-3">
+    <div id="liveToast" class="toast text-bg-danger" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">@sharedLocalizer["Warning"]</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastBody">
+        </div>
+    </div>
+</div>
+
