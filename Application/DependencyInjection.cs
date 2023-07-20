@@ -22,6 +22,7 @@ namespace Application
 
         public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration) {
             var config = TypeAdapterConfig.GlobalSettings;
+            ValidatorOptions.Global.LanguageManager = new AppLanguageManager();
             MappingProfile.ApplyMappings();
 
             services.AddSingleton(config);
