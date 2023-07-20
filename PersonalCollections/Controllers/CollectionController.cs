@@ -6,6 +6,7 @@ using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using PersonalCollections.Filters;
 using PersonalCollections.Models;
 
@@ -16,11 +17,13 @@ namespace PersonalCollections.Controllers
     {
         private readonly ICollectionService _collectionService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IStringLocalizer<CollectionController> _localizer;
 
-        public CollectionController(ICollectionService collectionService, UserManager<ApplicationUser> userManager)
+        public CollectionController(ICollectionService collectionService, UserManager<ApplicationUser> userManager, IStringLocalizer<CollectionController> localizer)
         {
             _collectionService = collectionService;
             _userManager = userManager;
+            _localizer = localizer;
         }
 
         [HttpGet]
@@ -59,7 +62,7 @@ namespace PersonalCollections.Controllers
             var collection = await _collectionService.GetByIdAsync(collectionId);
             if (collection is null)
             {
-                return View("Error", new ErrorViewModel { Message = "Collection not found!" });
+                return View("Error", new ErrorViewModel { Message = _localizer["NotFound"].Value });
             }
 
             return View(collection.Adapt<EditCollectionRequest>());
@@ -75,7 +78,7 @@ namespace PersonalCollections.Controllers
                 var collection = await _collectionService.GetByIdAsync(request.Id);
                 if (collection is null)
                 {
-                    return View("Error", new ErrorViewModel { Message = "Collection not found!" });
+                    return View("Error", new ErrorViewModel { Message = _localizer["NotFound"].Value });
                 }
                 return await _EditCollectionFailedResponseAsync(collection, request);
             }
@@ -129,7 +132,7 @@ namespace PersonalCollections.Controllers
         public async Task<IActionResult> Collection([FromQuery] string collectionId) {
             var collection = await _collectionService.GetByIdAsync(collectionId);
             if (collection is null) {
-                return View("Error", new ErrorViewModel { Message = $"Collection with id={collectionId} not found!" });
+                return View("Error", new ErrorViewModel { Message = _localizer["NotFound"].Value });
             }
 
             return View(collection);

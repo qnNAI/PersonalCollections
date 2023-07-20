@@ -2,19 +2,20 @@
 using Application.Common.Contracts.Services;
 using Application.Models.Item;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Localization;
 
 namespace PersonalCollections.SignalR
 {
     public class ItemHub : Hub
     {
         private readonly IItemService _itemService;
+        private readonly IStringLocalizer<ItemHub> _localizer;
 
-        public ItemHub(IItemService itemService)
+        public ItemHub(IItemService itemService, IStringLocalizer<ItemHub> localizer)
         {
             _itemService = itemService;
+            _localizer = localizer;
         }
 
         [Authorize]
@@ -57,7 +58,7 @@ namespace PersonalCollections.SignalR
 
             if(string.IsNullOrEmpty(comment.Text))
             {
-                await Clients.Caller.SendAsync("CommentFailed", "Empty comment text!");
+                await Clients.Caller.SendAsync("CommentFailed", _localizer["EmptyText"].Value);
                 return;
             }
 
@@ -66,7 +67,7 @@ namespace PersonalCollections.SignalR
 
             if (!result.Succeeded)
             {
-                await Clients.Caller.SendAsync("CommentFailed", "Failed to comment!");
+                await Clients.Caller.SendAsync("CommentFailed", _localizer["Failed"].Value);
                 return;
             }
 

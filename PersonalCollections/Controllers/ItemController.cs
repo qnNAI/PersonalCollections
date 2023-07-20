@@ -5,6 +5,7 @@ using Application.Models.Item;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using PersonalCollections.Models;
 
 namespace PersonalCollections.Controllers
@@ -13,10 +14,12 @@ namespace PersonalCollections.Controllers
     public class ItemController : Controller {
         private readonly IItemService _itemService;
         private readonly ICollectionService _collectionService;
+        private readonly IStringLocalizer<ItemController> _localizer;
 
-        public ItemController(IItemService itemService, ICollectionService collectionService) {
+        public ItemController(IItemService itemService, ICollectionService collectionService, IStringLocalizer<ItemController> localizer) {
             _itemService = itemService;
             _collectionService = collectionService;
+            _localizer = localizer;
         }
 
         [HttpGet]
@@ -90,7 +93,7 @@ namespace PersonalCollections.Controllers
 
             if(item is null)
             {
-                return View("Error", new ErrorViewModel { Message = "Item not found!" });
+                return View("Error", new ErrorViewModel { Message = _localizer["NotFound"].Value });
             }
             var collection = await _collectionService.GetByIdAsync(item.CollectionId);
             var likes = await _itemService.CountLikesAsync(itemId);
@@ -217,7 +220,7 @@ namespace PersonalCollections.Controllers
             if(item is null)
             {
                 return new ValidateAuthorResult { 
-                    ActionResult = View("Error", new ErrorViewModel { Message = "Item not found!" }) 
+                    ActionResult = View("Error", new ErrorViewModel { Message = _localizer["NotFound"].Value }) 
                 };
             }
 
