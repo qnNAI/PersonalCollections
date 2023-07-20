@@ -1,10 +1,11 @@
-﻿@{
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer;
+@{
     ViewData["Title"] = "Access denied";
 }
 
 <div class="container mt-4">
-    <h1 class="text-danger">Forbidden.</h1>
-    <h2 class="text-danger">Access to the requested page denied.</h2>
+    <h1 class="text-danger">@localizer["Forbidden"].</h1>
+    <h2 class="text-danger">@localizer["AccessDenied"].</h2>
 </div>
 
 

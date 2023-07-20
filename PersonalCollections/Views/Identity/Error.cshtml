@@ -1,12 +1,13 @@
 ﻿@using Microsoft.AspNetCore.Identity;
 @model IEnumerable<IdentityError>
+@inject Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> sharedLocalizer;
 @{
     ViewData["Title"] = "Error";
 }
 
 <div class="container mt-4">
-    <h1 class="text-danger">Error.</h1>
-    <h2 class="text-danger">An error occurred while processing your request.</h2>
+    <h1 class="text-danger">@sharedLocalizer["Error"].</h1>
+    <h2 class="text-danger">@sharedLocalizer["ErrorRequest"]</h2>
 
     <div class="mt-5">
         @foreach(var error in Model) {

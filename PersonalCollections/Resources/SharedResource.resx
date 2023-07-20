@@ -141,6 +141,9 @@
   <data name="Fields" xml:space="preserve">
     <value>Fields</value>
   </data>
+  <data name="ForgotPassword" xml:space="preserve">
+    <value>Forgot password</value>
+  </data>
   <data name="INTEGER" xml:space="preserve">
     <value>INTEGER</value>
   </data>
@@ -149,6 +152,12 @@
   </data>
   <data name="SearchResults" xml:space="preserve">
     <value>Search results</value>
+  </data>
+  <data name="SignIn" xml:space="preserve">
+    <value>Sign in</value>
+  </data>
+  <data name="SignUp" xml:space="preserve">
+    <value>Sign up</value>
   </data>
   <data name="STRING" xml:space="preserve">
     <value>STRING</value>

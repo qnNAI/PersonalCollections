@@ -1,33 +1,35 @@
 ﻿@model Application.Models.Identity.SignInRequest;
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer;
+@inject Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> sharedLocalizer;
 
 @{
-    ViewData["Title"] = "Sign in";
+    ViewData["Title"] = sharedLocalizer["SignIn"];
 }
 
 <div class="container mt-5">
     <form asp-antiforgery="true" asp-action="SignIn" asp-controller="Identity" method="post">
-    <div>
-        <div class="validation text-danger" asp-validation-summary="ModelOnly"></div>
-        <div class="form-floating">
-            <input asp-for="Login" class="form-control" autocomplete="username" aria-required="true" placeholder="JohnDoe" type="text" />
-            <label asp-for="Login">Login</label>
-            <span asp-validation-for="Login" class="text-danger"></span>
+        <div>
+            <div class="validation text-danger" asp-validation-summary="ModelOnly"></div>
+            <div class="form-floating">
+                <input asp-for="Login" class="form-control" autocomplete="username" aria-required="true" placeholder="JohnDoe" type="text" />
+                <label asp-for="Login">@localizer["Login"]</label>
+                <span asp-validation-for="Login" class="text-danger"></span>
+            </div>
+            <div class="form-floating">
+                <input asp-for="Password" class="form-control" autocomplete="current-password" aria-required="true" type="password" placeholder="password" />
+                <label asp-for="Password">@sharedLocalizer["Password"]</label>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class=" d-flex flex-row justify-content-between">
+                <input type="submit" value="@sharedLocalizer["SignIn"]" class="btn btn-success mb-0" />
+                <a asp-action="SignUp" class="btn btn-primary ms-2">@sharedLocalizer["SignUp"]</a>
+            </div>
+            <div class="mb-4">
+            <a asp-action="ForgotPassword">@sharedLocalizer["ForgotPassword"]</a>
+            </div>
+            <partial name="_SocialButtonsPartial" />
+            <input type="hidden" name="ReturnUrl" value="@Context.Request.Query["ReturnUrl"]" />
         </div>
-        <div class="form-floating">
-            <input asp-for="Password" class="form-control" autocomplete="current-password" aria-required="true" type="password" placeholder="password" />
-            <label asp-for="Password">Password</label>
-            <span asp-validation-for="Password" class="text-danger"></span>
-        </div>
-        <div class=" d-flex flex-row justify-content-between">
-            <input type="submit" value="Sign in" class="btn btn-success mb-0" />
-            <a asp-action="SignUp" class="btn btn-primary ms-2">Sign up</a>
-        </div>
-        <div class="mb-4">
-            <a asp-action="ForgotPassword">Forgot Password</a>
-        </div>
-        <partial name="_SocialButtonsPartial" />
-        <input type="hidden" name="ReturnUrl" value="@Context.Request.Query["ReturnUrl"]" />
-    </div>
     </form>
 
 </div>
