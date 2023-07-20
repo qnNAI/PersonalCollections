@@ -130,7 +130,7 @@ function addField() {
     div.classList.add('input-group');
     div.classList.add('mb-3');
     div.innerHTML = `
-        <input id="field-name-${counter}" type="text" name="Fields[index].Name" class="form-control" placeholder="Field name" required>
+        <input id="field-name-${counter}" type="text" name="Fields[index].Name" class="form-control" placeholder="..." required>
         <span class="input-group-text">${select.options[select.selectedIndex].text}</span>
         <input id="field-type-${counter}" type="hidden" value=${select.value} name="Fields[index].TypeId" />
         <button type="button" class="btn btn-danger" onclick="removeField('field-container-${counter}')">X</button>
@@ -147,7 +147,7 @@ function addFullField() {
     div.classList.add('input-group');
     div.classList.add('mb-3');
     div.innerHTML = `
-        <input id="field-name-${counter}" type="text" name="Fields[index].Name" class="form-control" placeholder="Field name" required>
+        <input id="field-name-${counter}" type="text" name="Fields[index].Name" class="form-control" placeholder="..." required>
         <span class="input-group-text">${select.options[select.selectedIndex].text}</span>
         <input id="field-type-${counter}" type="hidden" value=${select.value} name="Fields[index].FieldType.Id" />
         <button type="button" class="btn btn-danger" onclick="removeField('field-container-${counter}')">X</button>

@@ -1,4 +1,15 @@
 ﻿@using System.Security.Claims;
+@using Microsoft.AspNetCore.Localization;
+@using Microsoft.AspNetCore.Mvc.Localization;
+@using Microsoft.Extensions.Options;
+@inject IViewLocalizer Localizer
+@inject IOptions<RequestLocalizationOptions> LocOptions
+@{
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    var cultureItems = LocOptions.Value.SupportedUICultures
+        .Select(c => new SelectListItem { Value = c.Name, Text = c.TwoLetterISOLanguageName })
+        .ToList();
+}
 ﻿<!DOCTYPE html>
 <html lang="en" data-bs-theme="dark" translate="no" id="html-el">
 <head>
@@ -27,7 +38,7 @@
                     <ul class="navbar-nav me-auto">
                         @if (User.IsInRole("Admin")) {
                             <li class="nav-item">
-                                <a class="nav-link" href="@Url.Action("UserManagement", "Identity")">User management</a>
+                                <a class="nav-link" href="@Url.Action("UserManagement", "Identity")">@Localizer["UserManagement"]</a>
                             </li>
                         }
                         @if (User.Identity?.IsAuthenticated ?? false)
@@ -36,7 +47,7 @@
                                 <a 
                                     class="nav-link" 
                                     href="@Url.Action("CollectionsManagement", "Collection", new { userId = User.FindFirstValue(ClaimTypes.NameIdentifier) })">
-                                    My collections
+                                    @Localizer["MyCollections"]
                                 </a>
                             </li>
                         }
@@ -44,7 +55,7 @@
                             <form asp-action="Search" asp-controller="Item" method="get" class="d-flex mt-3 mt-xl-0 ms-xl-4 col-12 col-md-8 col-lg-6 col-xl-12" role="search">
                                 <input class="form-control me-2 " type="search" placeholder="..." id="search-term" name="term" aria-label="Search">
                                 <button class="btn btn-outline-success d-flex flex-row gap-2 align-items-center" type="submit" onclick="searchShowSpinner()">
-                                    Search
+                                    @Localizer["Search"]
                                     <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="srch-spinner"></span>
                                 </button>
                             </form>
@@ -79,6 +90,12 @@
                             </li>
                         </ul>
                     </div>
+
+                    <form asp-controller="Home" asp-action="SetLanguage" asp-route-returnUrl="@Context.Request.Path" method="post" class="mt-3 mt-xl-0 w-fit-content me-1">
+                        <select name="culture" onchange="this.form.submit();" class="form-select" asp-for="@requestCulture.RequestCulture.UICulture.Name" asp-items="cultureItems">
+                        </select>
+                    </form>
+
                     <partial name="_LoginPartial" />
                 </div>
             </div>

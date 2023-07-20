@@ -1,5 +1,7 @@
 ﻿@using Application.Models.Collection;
 @model IEnumerable<CollectionDto>
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer;
+@inject Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> sharedLocalizer;
 
 @foreach(var collection in Model)
 {
@@ -7,7 +9,7 @@
 
         <h5 class="col-12 col-md-5">@collection.Name</h5>
         <div class="col-12 col-md-5 mt-3 mt-md-0">
-            <div>Author</div>
+            <div>@sharedLocalizer["Author"]</div>
             <a href="@Url.Action("CollectionsManagement", "Collection", new { collection.UserId })" class="link-underline link-underline-opacity-0">@collection.Author.UserName</a>
         </div>
         <div class="col-12 col-md-2 d-flex justify-content-md-center mt-3 mt-md-0">

@@ -1,9 +1,9 @@
 using Application;
 using FluentValidation.AspNetCore;
 using Infrastructure;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.Extensions.Options;
 using PersonalCollections.Middleware;
 using PersonalCollections.SignalR;
 
@@ -48,14 +48,30 @@ builder.Services.Configure<IdentityOptions>(opts => {
 	opts.User.RequireUniqueEmail = true;
 });
 
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var cultures = new[] {
+        "en-US",
+        "ru",
+    };
+    options.SetDefaultCulture(cultures[0])
+        .AddSupportedCultures(cultures)
+        .AddSupportedUICultures(cultures);
+});
+
 builder.Services.AddSignalR(op => {
     op.EnableDetailedErrors = true;
 });
 
-builder.Services.AddControllersWithViews(o => {
-	o.ModelValidatorProviders.Clear();
-	o.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
-});
+builder.Services
+    .AddControllersWithViews(o => {
+        o.ModelValidatorProviders.Clear();
+        o.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+    })
+    .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+    .AddDataAnnotationsLocalization();
+
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddFluentValidationClientsideAdapters();
 
@@ -72,12 +88,13 @@ if (!app.Environment.IsDevelopment())
 {
 	app.UseDeveloperExceptionPage();
 }
+var localizationOptions = app.Services.GetService<IOptions<RequestLocalizationOptions>>().Value;
+app.UseRequestLocalization(localizationOptions);
 
 //app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
 
 app.UseAuthentication();
 app.UseAuthorization();

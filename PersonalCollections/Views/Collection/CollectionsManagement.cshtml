@@ -2,9 +2,11 @@
 @using Markdig;
 @using System.Security.Claims;
 @model CollectionsManagementResponse;
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer;
+@inject Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> sharedLocalizer;
 
 @{
-    ViewData["Title"] = "Collections";
+    ViewData["Title"] = sharedLocalizer["Collections"];
     var mdPipeline = new MarkdownPipelineBuilder()
         .UseAdvancedExtensions()
         .UseBootstrap()
@@ -19,14 +21,12 @@
     var isAuthor = (User.Identity?.IsAuthenticated ?? false) && (User.IsInRole("Admin") || User.FindFirstValue(ClaimTypes.NameIdentifier) == Model.Author.Id);
 }
 
-<h3 class="mt-5">Collections</h3>
-
-<h5 class="mt-5">@Model.Author.UserName collections</h5>
+<h3 class="mt-5">@sharedLocalizer["Collections"]: @Model.Author.UserName</h3>
 <div class="mt-4">
     @if(isAuthor)
     {
         <a class="btn btn-success" href="@Url.Action("AddCollection", "Collection", new { userId = Model.Author.Id })">
-            New
+            @sharedLocalizer["New"]
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle ms-1 mb-1" viewBox="0 0 16 16">
                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
                 <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
@@ -66,10 +66,10 @@
                                 </div>
                             }
                             <div class="alert alert-dark mt-2" role="alert">
-                                <b>@collection.Theme.Name</b>
+                                <b>@sharedLocalizer[$"{collection.Theme.Name}"]</b>
                             </div>
                             <a href="@Url.Action("Collection", "Collection", new { collectionId = collection.Id })" class="btn btn-primary mt-2">
-                                Items
+                                @sharedLocalizer["Items"]
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right ms-1 mb-1" viewBox="0 0 16 16">
                                     <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z" />
                                     <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z" />
@@ -90,7 +90,7 @@
 <div class="toast-container position-fixed bottom-0 start-0 p-3">
     <div id="liveToast" class="toast text-bg-danger" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header">
-            <strong class="me-auto">Warning</strong>
+            <strong class="me-auto">@sharedLocalizer["Warning"]</strong>
             <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
         <div class="toast-body" id="toastBody">

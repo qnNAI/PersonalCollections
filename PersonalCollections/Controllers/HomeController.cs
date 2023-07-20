@@ -1,9 +1,7 @@
 ﻿using Application.Common.Contracts.Services;
 using Application.Models.Common;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
-using PersonalCollections.Models;
-using System.Diagnostics;
 
 namespace PersonalCollections.Controllers
 {
@@ -33,5 +31,17 @@ namespace PersonalCollections.Controllers
 				Tags = await tagsTask
             });
 		}
-	}
+
+        [HttpPost]
+        public IActionResult SetLanguage(string culture, string returnUrl)
+        {
+            Response.Cookies.Append(
+                CookieRequestCultureProvider.DefaultCookieName,
+                CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
+                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+            );
+
+            return LocalRedirect(returnUrl);
+        }
+    }
 }

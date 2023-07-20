@@ -1,10 +1,11 @@
 ﻿@model ErrorViewModel
+@inject Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> sharedLocalizer;
 @{
-    ViewData["Title"] = "Error";
+    ViewData["Title"] = @sharedLocalizer["Error"];
 }
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
+<h1 class="text-danger">@sharedLocalizer["Error"].</h1>
+<h2 class="text-danger">@sharedLocalizer["ErrorRequest"]</h2>
 
 @if(!string.IsNullOrEmpty(Model.Message)) {
     <p class="text-danger">@Model.Message</p>
