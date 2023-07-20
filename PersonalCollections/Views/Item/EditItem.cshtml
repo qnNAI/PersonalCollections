@@ -1,20 +1,22 @@
 ﻿@using Application.Helpers;
 @using Application.Models.Item;
 @model ItemDto;
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer;
+@inject Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> sharedLocalizer;
 
 @{
-    ViewData["Title"] = "Edit item";
+    ViewData["Title"] = localizer["EditItem"];
     var fieldCounter = 0;
 }
 
-<h3 class="mt-5">Edit item</h3>
+<h3 class="mt-5">@localizer["EditItem"]</h3>
 
 <div class="mt-5 row mb-5">
     <div class="col-lg-4 col-md-6">
         <form asp-action="EditItem" id="edit-item-form">
             <div asp-validation-summary="ModelOnly" class="validation text-danger"></div>
             <div class="form-group mb-3">
-                <label asp-for="Name" class="form-label">Name</label>
+                <label asp-for="Name" class="form-label">@sharedLocalizer["Name"]</label>
                 <input asp-for="Name" class="form-control" type="text" value="@Model.Name"/>
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
@@ -58,13 +60,13 @@
                 </div>
             }
             <div class="form-group mb-3">
-                <label asp-for="Tags" class="form-label w-100">Tags</label>
+                <label asp-for="Tags" class="form-label w-100">@sharedLocalizer["Tags"]</label>
                 <input type="text" id="tags-input" data-role="tagsinput" value="@string.Join(',', Model.Tags.Select(x => x.Name))"/>
                 <span asp-validation-for="Tags" class="text-danger"></span>
             </div>
 
             <div class="mt-4 form-group">
-                <input type="submit" value="Save" class="btn btn-primary" onclick="setTags('edit-item-form');" />
+                <input type="submit" value="@sharedLocalizer["Save"]" class="btn btn-primary" onclick="setTags('edit-item-form');" />
             </div>
         </form>
     </div>

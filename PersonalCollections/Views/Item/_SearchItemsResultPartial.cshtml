@@ -1,5 +1,6 @@
 ﻿@using Application.Models.Item;
 @model IEnumerable<ItemDto>;
+@inject Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> sharedLocalizer;
 
 @foreach(var item in Model)
 {
@@ -7,11 +8,11 @@
 
         <h5 class="col-12 col-md-4">@item.Name</h5>
         <div class="col-12 col-md-3 mt-3 mt-md-0">
-            <div>Author</div>
+            <div>@sharedLocalizer["Author"]</div>
             <a href="@Url.Action("CollectionsManagement", "Collection", new { item.Collection.UserId })" class="link-underline link-underline-opacity-0">@item.Collection.Author.UserName</a>
         </div>
         <div class="col-12 col-md-4 mt-3 mt-md-0">
-            <div>Collection</div>
+            <div>@sharedLocalizer["Collection"]</div>
             <a href="@Url.Action("Collection", "Collection", new { item.CollectionId })" class="link-underline link-underline-opacity-0">@item.Collection.Name</a>
         </div>
         <div class="col-12 col-md-1 d-flex justify-content-md-center mt-3 mt-md-0">
