@@ -1,23 +1,25 @@
 ﻿@using Application.Models.Item;
 @model SearchItemsResponse
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer;
+@inject Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> sharedLocalizer;
 
 @{
-    ViewData["Title"] = "Search results";
+    ViewData["Title"] = sharedLocalizer["SearchResults"];
 }
 
 @if(!string.IsNullOrEmpty(Model.Term)) 
 {
-    <h4 class="mt-5">Search results for: "@(Model.Term)"</h4>
+    <h4 class="mt-5">@localizer["SearchResultForTerm"]: "@(Model.Term)"</h4>
 }
 
 <input type="hidden" id="term-hidden" value="@Model.Term" />
 
 <ul id="myTab" class="nav nav-tabs mt-5">
     <li class="nav-item">
-        <a class="nav-link active" data-bs-toggle="tab" aria-current="page" href="#items-pane">Items</a>
+        <a class="nav-link active" data-bs-toggle="tab" aria-current="page" href="#items-pane">@sharedLocalizer["Items"]</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" data-bs-toggle="tab" href="#collections-pane">Collections</a>
+        <a class="nav-link" data-bs-toggle="tab" href="#collections-pane">@sharedLocalizer["Collections"]</a>
     </li>
 </ul>
 

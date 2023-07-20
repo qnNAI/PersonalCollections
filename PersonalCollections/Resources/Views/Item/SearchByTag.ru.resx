@@ -117,46 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Author" xml:space="preserve">
-    <value>Author</value>
-  </data>
-  <data name="BOOLEAN" xml:space="preserve">
-    <value>CHECKBOX</value>
-  </data>
-  <data name="Collection" xml:space="preserve">
-    <value>Collection</value>
-  </data>
-  <data name="DATE" xml:space="preserve">
-    <value>DATE</value>
-  </data>
-  <data name="Description" xml:space="preserve">
-    <value>Description</value>
-  </data>
-  <data name="Error" xml:space="preserve">
-    <value>Error</value>
-  </data>
-  <data name="ErrorRequest" xml:space="preserve">
-    <value>An error occurred while processing your request.</value>
-  </data>
-  <data name="Fields" xml:space="preserve">
-    <value>Fields</value>
-  </data>
-  <data name="INTEGER" xml:space="preserve">
-    <value>INTEGER</value>
-  </data>
-  <data name="Name" xml:space="preserve">
-    <value>Name</value>
-  </data>
-  <data name="SearchResults" xml:space="preserve">
-    <value>Search results</value>
-  </data>
-  <data name="STRING" xml:space="preserve">
-    <value>STRING</value>
-  </data>
-  <data name="TEXT" xml:space="preserve">
-    <value>TEXT</value>
-  </data>
-  <data name="Theme" xml:space="preserve">
-    <value>Theme</value>
+  <data name="SearchResultForTag" xml:space="preserve">
+    <value>Результаты поиска по тегу</value>
   </data>
 </root>

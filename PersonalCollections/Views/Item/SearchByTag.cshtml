@@ -1,13 +1,15 @@
 ﻿@using Application.Models.Item;
 @model TagDto
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer;
+@inject Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> sharedLocalizer;
 
 @{
-    ViewData["Title"] = "Search by tag";
+    ViewData["Title"] = sharedLocalizer["SearchResults"];
 }
 
 <input type="hidden" value="@Model.Id" id="tag-id"/>
 
-<h4 class="mt-5">Search results for tag: "@(Model.Name)"</h4>
+<h4 class="mt-5">@localizer["SearchResultForTag"]: "@(Model.Name)"</h4>
 
 <div id="items-container">
 
